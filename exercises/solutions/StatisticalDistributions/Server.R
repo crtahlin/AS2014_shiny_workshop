@@ -6,7 +6,7 @@ library(shiny)
 # define the server-side logic of the Shiny application
 shinyServer(function(input, output) {
   
-  # build the menus for parameter selection based on the chosen distribution ####
+  # output$choose_parameters : build the menus for parameter selection based on the chosen distribution ####
   output$choose_parameters <- renderUI({
     # return() if no distribution is selected
     if(is.null(input$distribution)) { return() }
@@ -48,7 +48,7 @@ shinyServer(function(input, output) {
   # define number of digits to print
   my.digits=4
   
-  # define the menus to use with each distribution on the tab ####
+  # output$choose_value : define the menus to use with each distribution on the tab ####
   output$choose_value=renderUI({
     # define initial quantile values
     if(input$distribution=="norm")  my.value.init=round(qnorm(.975, input$my.mean, input$my.sd),2)
@@ -69,7 +69,7 @@ shinyServer(function(input, output) {
   }
   )
   
-  # define table of links on Wikipedia ####
+  # output$text1 : define table of links on Wikipedia ####
   output$text1=renderTable({
     
     WIKIPEDIA=c("http://en.wikipedia.org/wiki/Normal_distribution", "http://en.wikipedia.org/wiki/Chi-squared_distribution", "http://en.wikipedia.org/wiki/Binomial_distribution", "http://en.wikipedia.org/wiki/Student%27s_t-distribution" )
@@ -79,7 +79,7 @@ shinyServer(function(input, output) {
   }, sanitize.text.function = function(x) x)
   
   
-  # define table of probabilities ####
+  # output$table.prob : define table of probabilities ####
   output$table.prob=renderTable({
     # return() if no distribution is chosen
     if(is.null(input$distribution)) { return() }
@@ -123,7 +123,7 @@ shinyServer(function(input, output) {
     # pass additional parameters for table output formating to renderTable()
   }, digits=c(my.digits, my.digits, 4, 4), include.rownames=FALSE)  
   
-  # define table of quantiles ####
+  # output$my.table.quantiles : define table of quantiles ####
   output$my.table.quantiles=renderTable({
     # return() if no distribution is selected
     if(is.null(input$distribution)) { return() }
@@ -171,7 +171,7 @@ shinyServer(function(input, output) {
     return(my.table.2)
   }, digits=4 )
   
-  # WHAT IS THIS PLOT - IS IT EVEN PLOTTED? ####
+  # output$barplot.d : WHAT IS THIS PLOT - IS IT EVEN PLOTTED? ####
   output$barplot.d=renderPlot({
     
     if(is.null(input$distribution))
@@ -206,7 +206,7 @@ shinyServer(function(input, output) {
   })# end my.table.value
   
   
-  # define table of tail probabilities ####
+  # output$my.table.value : define table of tail probabilities ####
   output$my.table.value=renderTable({
     # return() if no distribution is selected
     if(is.null(input$distribution)) { return() }
@@ -279,15 +279,13 @@ shinyServer(function(input, output) {
     
   }, digits=4 )
   
-  ################## plot the density of the distribution
-  
-  
+  # output$plot.density : define the distribution density plots ####
   output$plot.density=renderPlot({
-    
+    # return() of no distribution is selected
     if(is.null(input$distribution)) { return() }
     
+    # plots for the binomial distribution
     if(input$distribution=="binom") {
-      
       par(mfrow=c(1,2))
       
       #save computational time
@@ -321,6 +319,7 @@ shinyServer(function(input, output) {
       
     }# if distr=binom
     
+    # plots for the normal distribution
     if(input$distribution=="norm") {
       
       x=seq(input$my.mean-4*input$my.sd, input$my.mean+4*input$my.sd, length.out=1000)
@@ -336,7 +335,7 @@ shinyServer(function(input, output) {
       
     }# end if distr = normal
     
-    
+    # plots for the t distribution
     if(input$distribution=="t") {
       
       x=seq(-5, 5, length.out=1000)
@@ -345,6 +344,7 @@ shinyServer(function(input, output) {
       
     }# end if distr = normal
     
+    # plots for the chi-square distribution
     if(input$distribution=="chisq") {
       
       x=seq(qchisq(1-.999, input$df), qchisq(.99, input$df), length.out=1000)
@@ -357,14 +357,12 @@ shinyServer(function(input, output) {
   })#end reactive barplot
   
   
-  output$text2=renderText("lara")
-  
-  ####################### density where the focus is given to a specific value
-  
+  # output$plot.value : define distribution density where the focus is given to a specific value ####
   output$plot.value=renderPlot({
-    
+    # return() if no distribution is selected
     if(is.null(input$distribution)) { return() }
     
+    # plots for the binomial distribution
     if(input$distribution=="binom") {
       
       par(mfrow=c(1,2))
@@ -452,6 +450,7 @@ shinyServer(function(input, output) {
       
     }# if distr=binom
     
+    # plots for the normal distribution
     if(input$distribution=="norm") {
       
       par(mfrow=c(1,2))
@@ -496,6 +495,7 @@ shinyServer(function(input, output) {
       
     }# end if distr = normal
     
+    # plots for the t distribution
     if(input$distribution=="t") {
       
       par(mfrow=c(1,3))
@@ -551,7 +551,7 @@ shinyServer(function(input, output) {
       
     }# end if distr = t
     
-    
+    # plots for the chi-square distribution
     if(input$distribution=="chisq") {
       
       par(mfrow=c(1,2))

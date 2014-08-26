@@ -1,0 +1,986 @@
+library(shiny)
+shinyServer(function(input, output) {
+  
+  #prepare the user interface, based on the distribution that is selected by the user
+  
+  output$choose_parameters <- renderUI({
+        
+    out=tagList(  
+      #sliderInput("my.mean", "Mean:", value=0, min=-100, max=100), 
+      #sliderInput("my.sd", "Standard deviation", value=1, min=0.01, max=100) 
+      
+      # Exercise: change to slider input
+      numericInput("my.mean", "Mean:", value=0), 
+      numericInput("my.sd", "Standard deviation", value=1, min=0.00001)
+      ) 
+        
+    if(is.null(input$distribution)) { return() }
+    
+    if(input$distribution=="norm") {
+      
+      out=tagList(  
+        #sliderInput("my.mean", "Mean:", value=0, min=-100, max=100), 
+        #sliderInput("my.sd", "Standard deviation", value=1, min=0.01, max=100) 
+                
+        numericInput("my.mean", "Mean:", value=0), 
+        numericInput("my.sd", "Standard deviation", value=1, min=0.00001) 
+        
+        #, numericInput("my.value", "Choose a value", value=1.96) 
+        )
+    }
+        
+    if(input$distribution=="binom") {
+      
+      out=tagList( 
+        #sliderInput("n", "Number of trials:", value=10, min=1, max=200),         
+        #sliderInput("my.p", "Probability of success:", 0.5, min=0, max=1) 
+        
+        numericInput("n", "Number of trials:", value=10, min=1), 
+        numericInput("my.p", "Probability of success:", 0.5, min=0, max=1, step=0.05) 
+                
+        #, numericInput("my.value", "Choose a value", value=5, min=0 ) 
+        )
+    }
+    
+    if(input$distribution=="t") {
+      
+      out=tagList( 
+        #sliderInput("df", "Degrees of freedom:", value=10, min=1, max=200) 
+        numericInput("df", "Degrees of freedom:", value=10, min=1)
+        
+        #, numericInput("my.value", "Choose a value", value=1.96) 
+      )
+    }
+        
+    if(input$distribution=="chisq") {
+      
+      out=tagList( 
+        
+        #sliderInput("df", "Degrees of freedom:", value=1, min=1, max=200) 
+        numericInput("df", "Degrees of freedom:", value=1, min=1)
+        #,   numericInput("my.value", "Choose a value", value=3.84) 
+        
+      )
+    }
+    
+    return(out)
+    
+  })
+  
+    
+  my.digits=4
+    
+  output$choose_value=renderUI({
+    
+    if(input$distribution=="norm")  my.value.init=round(qnorm(.975, input$my.mean, input$my.sd),2)
+    if(input$distribution=="t")  my.value.init=round(qt(.975, input$df),2)
+    if(input$distribution=="chisq")  my.value.init=round(qchisq(.95, input$df), 2)
+    if(input$distribution=="binom")  my.value.init=qbinom(.90, input$n, input$my.p)
+        
+    out=tagList( 
+      #sliderInput("df", "Degrees of freedom:", value=1, min=1, max=200) 
+      numericInput("my.value", "Choose a value: ", value=my.value.init)
+      #,   numericInput("my.value", "Choose a value", value=3.84) 
+      )
+        
+    if(input$distribution=="binom")
+      out=tagList( 
+        numericInput("my.value", "Choose a value: ", value=my.value.init), 
+        checkboxInput("my.gl", "Display P(X>=x) and P(X<x)", value=FALSE) )
+    #c("P(X>x) and P(X<=x)" = "gle",
+    
+    return(out)
+    }
+    )
+  
+  output$text1=renderTable({
+    
+    WIKIPEDIA=c("http://en.wikipedia.org/wiki/Normal_distribution", "http://en.wikipedia.org/wiki/Chi-squared_distribution", "http://en.wikipedia.org/wiki/Binomial_distribution", "http://en.wikipedia.org/wiki/Student%27s_t-distribution" )
+    WIKIPEDIA=paste0("<a href='",  WIKIPEDIA, c("' target='_blank'>Normal distribution</a>", "' target='_blank'>Chi-squared distribution</a>", "' target='_blank'>Binomial distribution</a>", "' target='_blank'>t distribution</a>"))
+    
+    data.frame(WIKIPEDIA)
+  }, sanitize.text.function = function(x) x)
+  
+  
+  ########### evaluate the complete table of probabilities
+  output$table.prob=renderTable({
+    
+    if(is.null(input$distribution))
+      return()
+        
+    if(input$distribution=="norm"){
+        
+      x=seq(input$my.mean-4*input$my.sd, input$my.mean+4*input$my.sd, length.out=100)
+      my.table=cbind(x, pnorm(x, input$my.mean, input$my.sd ), 1-pnorm(x, input$my.mean, input$my.sd)  )
+      
+      dimnames(my.table)[[2]]=c("x", "P(X<x)", "P(X>x)")
+    }
+        
+    if(input$distribution=="t"){
+      
+      x=seq(-5, 5, length.out=1000)
+      my.table=cbind(x, pt(x, input$df ), 1-pt(x,input$df)  )
+      
+      dimnames(my.table)[[2]]=c("x", "P(X<x)", "P(X>x)")
+    }
+    
+    if(input$distribution=="chisq"){
+      
+      x=seq(qchisq(1-.99, input$df),  qchisq(.99, input$df), length.out=1000)
+      my.table=cbind(x, pchisq(x, input$df ), 1-pchisq(x,input$df)  )
+      
+      dimnames(my.table)[[2]]=c("x", "P(X<x)", "P(X>x)")
+    }
+    
+    if(input$distribution=="binom"){
+      my.table=cbind(0:input$n, dbinom(0:input$n, size=input$n, prob=input$my.p),pbinom(0:input$n, size=input$n, prob=input$my.p) )
+      dimnames(my.table)[[2]]=c("k", "P(K=k)", "P(K<=k)")
+      
+    }
+        
+    return(my.table)
+    
+    
+  }, digits=c(my.digits, my.digits, 4, 4), include.rownames=FALSE)  
+  
+  ################ evaluates the quantiles for the distribution
+  
+  output$my.table.quantiles=renderTable({
+    
+    if(is.null(input$distribution))
+      return()
+      
+    if(input$distribution=="norm"){
+      
+      my.sign=c(0.05, 0.01, 0.001)
+      
+      my.val1.q=qnorm(1-my.sign/2, input$my.mean, input$my.sd)
+      
+      my.val2.q=qnorm(my.sign/2, input$my.mean, input$my.sd)
+      
+      my.table.2=as.table(cbind(1-my.sign, my.val2.q, my.val1.q))
+      dimnames(my.table.2)[[2]]=c("Proportion of observations in the interval", "Lower value", "Upper value")
+    }
+    
+    if(input$distribution=="t"){
+      
+      my.sign=c(0.05, 0.01, 0.001)
+      
+      my.val1=qt(1-my.sign/2, input$df)
+      
+      my.val2=qt(my.sign/2, input$df)
+      
+      my.table.2=as.table(cbind(1-my.sign, my.val2, my.val1))
+      dimnames(my.table.2)[[2]]=c("Proportion of observations in the interval", "Lower value", "Upper value")
+    }
+    
+    
+    if(input$distribution=="chisq"){
+      
+      my.sign=c(0.05, 0.01, 0.001)
+      
+      my.val1=qchisq(1-my.sign, input$df)
+      
+      my.val2=qchisq(0, input$df)
+      
+      my.table.2=as.table(cbind(1-my.sign, my.val2,  my.val1))
+      dimnames(my.table.2)[[2]]=c("Proportion of observations in the interval", "Lower value", "Upper value")
+    }
+        
+    if(input$distribution=="binom"){
+      
+      my.sign=c(0.05, 0.01, 0.001)
+      
+      my.val1=qbinom(1-my.sign/2, input$n, input$my.p)
+      
+      my.val2=qbinom(my.sign/2, input$n, input$my.p)
+      
+      my.val3=numeric(length(my.sign))
+      for(i in 1:length(my.sign))
+        my.val3[i]=sum(dbinom(my.val2[i]:my.val1[i], input$n, input$my.p))
+      
+      
+      # my.table.2=as.table(c(input$my.value, pnorm(input$my.value, input$my.mean, input$my.sd), 1-pnorm(input$my.value, input$my.mean, input$my.sd)))
+      my.table.2=as.table(cbind(1-my.sign, my.val2,  my.val1, my.val3))
+      dimnames(my.table.2)[[2]]=c("Approximate proportion of observations in the interval", "Lower value", "Upper value", "Exact proportion of observations in the interval")
+      #my.table.2=as.table(c(input$my.value, my.val1.ok, my.val2.ok))
+      
+      # my.table.2=c(input$my.value, my.val1.ok, my.val2.ok)
+      #   names(my.table.2)=c("Value", paste("P(X<", input$my.value, ")", sep=""),  paste("P(X>", input$my.value, ")", sep=""))
+      #dimnames(my.table.2)[[2]]=paste("N(",input$my.mean, ",", input$my.sd, ")", sep="")
+    }
+    
+    
+    
+    my.table.2
+    
+  }, digits=4 )
+  
+  
+  # if(input$distribution=="norm"){
+  
+  
+  output$barplot.d=renderPlot({
+    
+    
+    if(is.null(input$distribution))
+      return()
+    
+    
+    
+    par(mfrow=c(1,2))
+    
+    # barplot(dbinom(0:input$n, size=input$n, prob=input$my.p), ylab="", xlab="", main="")
+    
+    my.dbinom.res=dbinom(0:input$n, size=input$n, prob=input$my.p)
+    #which probabilities are "positive" - added to omit the values with almost 0 prob from the graphs with large n
+    #if(input$n>50) {which.pos=which(my.dbinom.res>1e-20)} else which.pos=c(0:input$n)+1
+    
+    
+    
+    
+    #barplot(my.dbinom.res[which.pos], ylab="", xlab="", main="")
+    barplot(my.dbinom.res, ylab="", xlab="", main="")
+    grid()
+    
+    my.col=rep("gray", input$n+1)
+    #my.col[input$k+1]="red"
+    
+    barplot(dbinom(0:input$n, size=input$n, prob=input$my.p), ylab="Probability", xlab="Outcome", 
+            # barplot(my.dbinom.res[which.pos], ylab="Probability", xlab="Outcome", 
+            main=paste("Binomial distribution \n Bin (", input$n, ", ", input$my.p, ")", sep="" ), 
+            add=TRUE, names=c(0:input$n),
+            col=my.col, cex.main=1, cex.lab=1.5, cex.axis=2       
+            
+    )
+    
+    
+    barplot(pbinom(0:input$n, size=input$n, prob=input$my.p), ylab="", xlab="", main="", cex.main=2, cex.lab=2, cex.axis=2)
+    grid()
+    
+    my.col=rep("gray", input$n+1)
+    #my.col[input$k+1]="red"
+    
+    barplot(pbinom(0:input$n, size=input$n, prob=input$my.p), ylab="Probability", xlab="Outcome", 
+            main=paste("Cumulative \n binomial distribution \n Bin (", input$n, ", ", input$my.p, ")", sep=""   ), 
+            
+            add=TRUE, names=c(0:input$n),
+            col=my.col      ,  cex.main=1, cex.lab=1.5, cex.axis=2
+            
+    )
+    
+    
+  })# end my.table.value
+  
+  
+  
+  
+  
+  
+  ################# table with the tail probabilities
+  
+  output$my.table.value=renderTable({
+    
+    
+    
+    if(is.null(input$distribution))
+      return()
+    
+    
+    if(input$distribution=="norm"){
+      
+      my.val1=pnorm(input$my.value, input$my.mean, input$my.sd)
+      my.val1.ok=ifelse(my.val1<0.0001, "<0.0001", round(my.val1,4))    
+      if(my.val1>0.9999) my.val1.ok=">0.9999"
+      
+      
+      my.val2=1-pnorm(input$my.value, input$my.mean, input$my.sd)
+      my.val2.ok=ifelse(my.val2<0.0001, "<0.0001", round(my.val2,4))    
+      if(my.val2>0.9999) my.val2.ok=">0.9999"
+      
+      
+      
+      
+      
+      # my.table.2=as.table(c(input$my.value, pnorm(input$my.value, input$my.mean, input$my.sd), 1-pnorm(input$my.value, input$my.mean, input$my.sd)))
+      my.table.2=as.table(c(input$my.value, my.val1, my.val2))
+      dimnames(my.table.2)[[1]]=c("Value", paste("P(X<", input$my.value, ")", sep=""),  paste("P(X>", input$my.value, ")", sep=""))
+      #my.table.2=as.table(c(input$my.value, my.val1.ok, my.val2.ok))
+      
+      # my.table.2=c(input$my.value, my.val1.ok, my.val2.ok)
+      #   names(my.table.2)=c("Value", paste("P(X<", input$my.value, ")", sep=""),  paste("P(X>", input$my.value, ")", sep=""))
+      #dimnames(my.table.2)[[2]]=paste("N(",input$my.mean, ",", input$my.sd, ")", sep="")
+    }
+    
+    
+    
+    
+    if(input$distribution=="t"){
+      
+      my.val1=pt(input$my.value, input$df)
+      my.val1.ok=ifelse(my.val1<0.0001, "<0.0001", round(my.val1,4))    
+      if(my.val1>0.9999) my.val1.ok=">0.9999"
+      
+      
+      my.val2=1-pt(input$my.value, input$df)
+      my.val2.ok=ifelse(my.val2<0.0001, "<0.0001", round(my.val2,4))    
+      if(my.val2>0.9999) my.val2.ok=">0.9999"
+      
+      
+      
+      
+      
+      # my.table.2=as.table(c(input$my.value, pnorm(input$my.value, input$my.mean, input$my.sd), 1-pnorm(input$my.value, input$my.mean, input$my.sd)))
+      my.table.2=as.table(c(input$my.value, my.val1, my.val2))
+      dimnames(my.table.2)[[1]]=c("Value", paste("P(X<", input$my.value, ")", sep=""),  paste("P(X>", input$my.value, ")", sep=""))
+      #my.table.2=as.table(c(input$my.value, my.val1.ok, my.val2.ok))
+      
+      # my.table.2=c(input$my.value, my.val1.ok, my.val2.ok)
+      #   names(my.table.2)=c("Value", paste("P(X<", input$my.value, ")", sep=""),  paste("P(X>", input$my.value, ")", sep=""))
+      #dimnames(my.table.2)[[2]]=paste("N(",input$my.mean, ",", input$my.sd, ")", sep="")
+    }
+    
+    
+    
+    
+    
+    if(input$distribution=="chisq"){
+      
+      my.val1=pchisq(input$my.value, input$df)
+      my.val1.ok=ifelse(my.val1<0.0001, "<0.0001", round(my.val1,4))    
+      if(my.val1>0.9999) my.val1.ok=">0.9999"
+      
+      
+      my.val2=1-pchisq(input$my.value, input$df)
+      my.val2.ok=ifelse(my.val2<0.0001, "<0.0001", round(my.val2,4))    
+      if(my.val2>0.9999) my.val2.ok=">0.9999"
+      
+      
+      
+      
+      
+      # my.table.2=as.table(c(input$my.value, pnorm(input$my.value, input$my.mean, input$my.sd), 1-pnorm(input$my.value, input$my.mean, input$my.sd)))
+      my.table.2=as.table(c(input$my.value, my.val1, my.val2))
+      dimnames(my.table.2)[[1]]=c("Value", paste("P(X<", input$my.value, ")", sep=""),  paste("P(X>", input$my.value, ")", sep=""))
+      #my.table.2=as.table(c(input$my.value, my.val1.ok, my.val2.ok))
+      
+      # my.table.2=c(input$my.value, my.val1.ok, my.val2.ok)
+      #   names(my.table.2)=c("Value", paste("P(X<", input$my.value, ")", sep=""),  paste("P(X>", input$my.value, ")", sep=""))
+      #dimnames(my.table.2)[[2]]=paste("N(",input$my.mean, ",", input$my.sd, ")", sep="")
+    }
+    
+    
+    
+    if(input$distribution=="binom"){
+      
+      my.val1=pbinom(input$my.value, input$n, input$my.p)
+      my.val1.ok=ifelse(my.val1<0.0001, "<0.0001", round(my.val1,4))    
+      if(my.val1>0.9999) my.val1.ok=">0.9999"
+      
+      
+      my.val2=1-pbinom(input$my.value, input$n, input$my.p)
+      my.val2.ok=ifelse(my.val2<0.0001, "<0.0001", round(my.val2,4))    
+      if(my.val2>0.9999) my.val2.ok=">0.9999"
+      
+      #probability of the selected value
+      my.val3=dbinom(input$my.value, input$n, input$my.p)
+      
+      
+      # my.table.2=as.table(c(input$my.value, pnorm(input$my.value, input$my.mean, input$my.sd), 1-pnorm(input$my.value, input$my.mean, input$my.sd)))
+      my.table.2=as.table(c(input$my.value, my.val1, my.val2, my.val3))
+      dimnames(my.table.2)[[1]]=c("Value", paste("P(K<=", input$my.value, ")", sep=""),  paste("P(K>", input$my.value, ")", sep=""), paste("P(K=", input$my.value, ")", sep=""))
+      #my.table.2=as.table(c(input$my.value, my.val1.ok, my.val2.ok))
+      
+      # my.table.2=c(input$my.value, my.val1.ok, my.val2.ok)
+      #   names(my.table.2)=c("Value", paste("P(X<", input$my.value, ")", sep=""),  paste("P(X>", input$my.value, ")", sep=""))
+      #dimnames(my.table.2)[[2]]=paste("N(",input$my.mean, ",", input$my.sd, ")", sep="")
+    }
+    
+    
+    
+    my.table.2
+    
+  }, digits=4 )
+  
+  
+  # if(input$distribution=="norm"){
+  
+  
+  
+  
+  
+  
+  ################## plot the density of the distribution
+  
+  
+  output$plot.density=renderPlot({
+    
+    if(is.null(input$distribution)) return()
+    
+    
+    
+    
+    if(input$distribution=="binom"){
+      
+      # barplot.d2=renderPlot({
+      par(mfrow=c(1,2))
+      
+      
+      #save computational time
+      my.dbinom.res=dbinom(0:input$n, size=input$n, prob=input$my.p)
+      
+      #added to limit the xlim of the plots with too large n
+      if(input$n>50) which.pos=which(my.dbinom.res>1e-20) else which.pos=c(0:input$n)+1
+      
+      barplot(my.dbinom.res[which.pos], ylab="", xlab="", main="", cex.main=2, cex.lab=1.5, cex.axis=2)
+      
+      
+      # barplot(my.dbinom.res, ylab="", xlab="", main="",cex.main=2, cex.lab=1.5, cex.axis=2)
+      grid()
+      
+      my.col=rep("gray", input$n+1)
+      #my.col[input$k+1]="red"
+      
+      #  barplot(dbinom(0:input$n, size=input$n, prob=input$my.p), ylab="Probability", xlab="Outcome", 
+      barplot(my.dbinom.res[which.pos], ylab="Probability", xlab="Outcome",
+              main=paste("Binomial distribution \n Bin (", input$n, ", ", input$my.p, ")", sep="" ), 
+              add=TRUE, names=c(0:input$n)[which.pos],
+              col=my.col, cex.main=1.5, cex.lab=1.5, cex.axis=2)
+      
+      
+      ################## cumulative distribution
+      barplot(pbinom(0:input$n, size=input$n, prob=input$my.p), ylab="", xlab="", main="",cex.main=2, cex.lab=1.5, cex.axis=2)
+      grid()
+      
+      my.col=rep("gray", input$n+1)
+      #my.col[input$k+1]="red"
+      
+      barplot(pbinom(0:input$n, size=input$n, prob=input$my.p), ylab="Probability", xlab="Outcome", 
+              main=paste("Cumulative \n binomial distribution \n Bin (", input$n, ", ", input$my.p, ")", sep="" ), 
+              add=TRUE, names=c(0:input$n),
+              col=my.col, cex.main=1.5, cex.lab=1.5, cex.axis=2)
+      
+      
+      
+    }# if distr=binom
+    
+    
+    
+    
+    
+    
+    if(input$distribution=="norm"){
+      
+      x=seq(input$my.mean-4*input$my.sd, input$my.mean+4*input$my.sd, length.out=1000)
+      
+      plot(x, dnorm(x, input$my.mean, input$my.sd), type="l", main=paste("Normal density : N(" , round(input$my.mean,2), "," , round(input$my.sd,2), ")",  sep=""), , ylab="Density", xlab="Value",
+           cex.main=2, cex.lab=1.5, cex.axis=2, axes=FALSE)
+      
+      axis(1, at=c(input$my.mean-3*input$my.sd, input$my.mean-2*input$my.sd, input$my.mean-1*input$my.sd, input$my.mean, input$my.mean+input$my.sd, 
+                   input$my.mean+2*input$my.sd, input$my.mean+3*input$my.sd), cex.axis=2)
+      axis(2, cex.axis=2)
+      
+      box()
+      
+      
+      
+      
+      
+    }# end if distr = normal
+    
+    
+    if(input$distribution=="t"){
+      
+      x=seq(-5, 5, length.out=1000)
+      plot(x, dt(x, input$df), type="l", main=paste("t density : t(" , input$df, ")",  sep=""), , ylab="Density", xlab="Value", 
+           cex.main=2, cex.lab=1.5, cex.axis=2)   
+      
+      
+      
+    }# end if distr = normal
+    
+    
+    
+    if(input$distribution=="chisq"){
+      
+      x=seq(qchisq(1-.999, input$df), qchisq(.99, input$df), length.out=1000)
+      if(input$df==1) x=seq(qchisq(1-.6, input$df), qchisq(.99, input$df), length.out=1000)
+      plot(x, dchisq(x, input$df), type="l", main=paste("chi-square density : chi(" , input$df, ")",  sep=""), , ylab="Density", xlab="Value",
+           cex.main=2, cex.lab=1.5, cex.axis=2)   
+      
+      
+      
+    }# end if distr = chisq
+    
+    
+    
+    
+    
+  })#end reactive barplot
+  
+  
+  
+  
+  output$text2=renderText("lara")
+  
+  
+  
+  ####################### density where the focus is given to a specific value
+  
+  
+  output$plot.value=renderPlot({
+    
+    if(is.null(input$distribution)) return()
+    
+    
+    
+    
+    if(input$distribution=="binom"){
+      
+      # barplot.d2=renderPlot({
+      par(mfrow=c(1,2))
+      
+      
+      
+      if(input$my.gl==FALSE){
+        
+        
+        
+        ##############P(X>my.value)
+        
+        barplot(dbinom(0:input$n, size=input$n, prob=input$my.p), ylab="", xlab="", main="", cex.main=2, cex.lab=1.5, cex.axis=2)
+        grid()
+        
+        
+        
+        my.col=rep("gray", input$n+1)
+        my.col[which(c(0:input$n)>input$my.value)]="red"
+        
+        barplot(dbinom(0:input$n, size=input$n, prob=input$my.p), ylab="Probability", xlab="Outcome", 
+                main=paste("Binomial distribution \n Bin (", input$n, ", ", input$my.p, ")", sep="" ), 
+                names=c(0:input$n),
+                col=my.col, cex.main=2, cex.lab=1.5, cex.axis=2, add=TRUE)
+        
+        
+        my.p0=1-pbinom(input$my.value, input$n, input$my.p)
+        my.p=ifelse(my.p0<0.0001, "<0.0001", paste("=", round(my.p0,4) )) 
+        if(my.p0>0.9999) my.p=">0.9999"
+        
+        
+        my.adj=0
+        #text(x=input$n,
+        #  #x=input$my.value, 
+        #  y=dbinom(input$my.value, input$n, input$my.p)+(par("usr")[4]-par("usr")[3])*.15, 
+        #     labels=paste("P(K>", input$my.value, ") ", my.p, sep="") , col="black", xpd=T, cex=2, adj=my.adj)
+        
+        
+        legend("topright", legend=paste("P(X>", input$my.value, ") ", "\n", my.p, sep=""), fill="red", bty="n") 
+        
+        
+        
+        
+        barplot(dbinom(0:input$n, size=input$n, prob=input$my.p), ylab="", xlab="", main="", cex.main=2, cex.lab=1.5, cex.axis=2)
+        grid()
+        
+        my.col=rep("gray", input$n+1)
+        #my.col[input$k+1]="red"
+        
+        # barplot(dbinom(0:input$n, size=input$n, prob=input$my.p), ylab="Probability", xlab="Outcome", main="Binomial distribution", add=TRUE, names=c(0:input$n),
+        #          col=my.col, cex.main=2, cex.lab=2, cex.axis=2)
+        
+        
+        my.col[which(c(0:input$n)<=input$my.value)]="blue"
+        
+        barplot(dbinom(0:input$n, size=input$n, prob=input$my.p), ylab="Probability", xlab="Outcome", 
+                main=paste("Binomial distribution \n Bin (", input$n, ", ", input$my.p, ")", sep="" ), 
+                names=c(0:input$n),
+                col=my.col, cex.main=2, cex.lab=1.5, cex.axis=2, add=TRUE)
+        
+        
+        my.p0=pbinom(input$my.value, input$n, input$my.p)
+        my.p=ifelse(my.p0<0.0001, "<0.0001", paste("=", round(my.p0,4) )) 
+        if(my.p0>0.9999) my.p=">0.9999"
+        
+        
+        #my.adj=ifelse(input$my.value<input$n/2, 0, 1)
+        #my.adj=0
+        #text(x=0,
+        #  #x=input$my.value, 
+        #  y=dbinom(input$my.value, input$n, input$my.p)+(par("usr")[4]-par("usr")[3])*.15, 
+        #    labels=paste("P(K<=", input$my.value, ") ", my.p, sep="") , col="black", xpd=T, cex=2, adj=my.adj)
+        
+        
+        legend("topleft", legend=paste("P(X<=", input$my.value, ") ", "\n", my.p, sep=""), fill="blue", bty="n")
+      }
+      
+      
+      
+      
+      if(input$my.gl==TRUE){
+        
+        
+        
+        ##############P(X>my.value)
+        
+        barplot(dbinom(0:input$n, size=input$n, prob=input$my.p), ylab="", xlab="", main="", cex.main=2, cex.lab=1.5, cex.axis=2)
+        grid()
+        
+        
+        
+        my.col=rep("gray", input$n+1)
+        my.col[which(c(0:input$n)>=input$my.value)]="red"
+        
+        barplot(dbinom(0:input$n, size=input$n, prob=input$my.p), ylab="Probability", xlab="Outcome", 
+                main=paste("Binomial distribution \n Bin (", input$n, ", ", input$my.p, ")", sep="" ), 
+                names=c(0:input$n),
+                col=my.col, cex.main=2, cex.lab=1.5, cex.axis=2, add=TRUE)
+        
+        
+        my.p0=1-pbinom(input$my.value-1, input$n, input$my.p)############## updated
+        my.p=ifelse(my.p0<0.0001, "<0.0001", paste("=", round(my.p0,4) )) 
+        if(my.p0>0.9999) my.p=">0.9999"
+        
+        
+        my.adj=0
+        #text(x=input$n,
+        #  #x=input$my.value, 
+        #  y=dbinom(input$my.value, input$n, input$my.p)+(par("usr")[4]-par("usr")[3])*.15, 
+        #     labels=paste("P(K>", input$my.value, ") ", my.p, sep="") , col="black", xpd=T, cex=2, adj=my.adj)
+        
+        
+        legend("topright", legend=paste("P(X>=", input$my.value, ") ", "\n", my.p, sep=""), fill="red", bty="n") 
+        
+        
+        
+        
+        barplot(dbinom(0:input$n, size=input$n, prob=input$my.p), ylab="", xlab="", main="", cex.main=2, cex.lab=1.5, cex.axis=2)
+        grid()
+        
+        my.col=rep("gray", input$n+1)
+        #my.col[input$k+1]="red"
+        
+        # barplot(dbinom(0:input$n, size=input$n, prob=input$my.p), ylab="Probability", xlab="Outcome", main="Binomial distribution", add=TRUE, names=c(0:input$n),
+        #          col=my.col, cex.main=2, cex.lab=2, cex.axis=2)
+        
+        
+        my.col[which(c(0:input$n)<input$my.value)]="blue"
+        
+        barplot(dbinom(0:input$n, size=input$n, prob=input$my.p), ylab="Probability", xlab="Outcome", 
+                main=paste("Binomial distribution \n Bin (", input$n, ", ", input$my.p, ")", sep="" ), 
+                names=c(0:input$n),
+                col=my.col, cex.main=2, cex.lab=1.5, cex.axis=2, add=TRUE)
+        
+        
+        my.p0=pbinom(input$my.value-1, input$n, input$my.p) # update
+        my.p=ifelse(my.p0<0.0001, "<0.0001", paste("=", round(my.p0,4) )) 
+        if(my.p0>0.9999) my.p=">0.9999"
+        
+        
+        #my.adj=ifelse(input$my.value<input$n/2, 0, 1)
+        #my.adj=0
+        #text(x=0,
+        #  #x=input$my.value, 
+        #  y=dbinom(input$my.value, input$n, input$my.p)+(par("usr")[4]-par("usr")[3])*.15, 
+        #    labels=paste("P(K<=", input$my.value, ") ", my.p, sep="") , col="black", xpd=T, cex=2, adj=my.adj)
+        
+        
+        legend("topleft", legend=paste("P(X<", input$my.value, ") ", "\n", my.p, sep=""), fill="blue", bty="n")
+      }
+      
+      
+      
+      
+      
+    }# if distr=binom
+    
+    
+    
+    
+    
+    
+    if(input$distribution=="norm"){
+      
+      
+      par(mfrow=c(1,2))
+      
+      
+      my.max=max(input$my.mean+4*input$my.sd, abs(input$my.value)+ input$my.sd )
+      #centering around the mean
+      x=seq(2*input$my.mean-my.max, my.max, length.out=10000)
+      plot(x, dnorm(x, input$my.mean, input$my.sd), type="l", 
+           main=paste("Normal density : N(" , round(input$my.mean,2), "," , round(input$my.sd,2), ")",  sep=""), ylab="Density", xlab="Value", 
+           cex.main=2, cex.lab=1.5, cex.axis=2, axes=FALSE)
+      
+      axis(1, at=c(input$my.mean-3*input$my.sd, input$my.mean-2*input$my.sd, input$my.mean-1*input$my.sd, input$my.mean, input$my.mean+input$my.sd, 
+                   input$my.mean+2*input$my.sd, input$my.mean+3*input$my.sd, input$my.value), cex.axis=1.5)
+      axis(2, cex.axis=1.5)
+      
+      box()
+      
+      
+      #segments(  x[x>abs(my.value)],  rep(0, length(x[x>abs(my.value)])),   x[x>abs(my.value)], dnorm(x[x>abs(my.value)], my.mean, my.sd), col="red")
+      
+      #segments(  x[x<(-abs(my.value))],  rep(0, length(x[x<(-abs(my.value))])),   x[x<(-abs(my.value))], dnorm(x[x<(-abs(my.value))], my.mean, my.sd), col="red")
+      
+      segments(  x[x>input$my.value],  rep(0, length(x[x>input$my.value])),   x[x>input$my.value], dnorm(x[x>input$my.value], input$my.mean, input$my.sd), col="red")
+      my.p0=1-pnorm(input$my.value, input$my.mean, input$my.sd)
+      my.p=ifelse(my.p0<0.0001, "<0.0001", paste("=", round(my.p0,4) )) 
+      if(my.p0>0.9999) my.p=">0.9999"
+      
+      
+      #left-align for values below the mean, right align for values above the mean
+      my.adj=ifelse(input$my.value<input$my.mean, 0, 1)
+      
+      
+      
+      # text(x=input$my.value, y=dnorm(input$my.value, input$my.mean, input$my.sd)+(par("usr")[4]-par("usr")[3])*.15, 
+      #     labels=paste("P(X>", input$my.value, ") ", my.p, sep="") , col="black", xpd=T, cex=2, adj=my.adj)
+      
+      
+      legend("topright", legend=paste("P(X>", input$my.value, ") ", "\n", my.p, sep=""), fill="red", bty="n")
+      
+      
+      
+      plot(x, dnorm(x, input$my.mean, input$my.sd), type="l", main=paste("Normal density : N(" , round(input$my.mean,2), "," , round(input$my.sd,2), ")",  sep=""), ylab="Density", xlab="Value",
+           cex.main=2, cex.lab=1.5, cex.axis=2, axes=FALSE
+      )   
+      segments(  x[x<input$my.value],  rep(0, length(x[x<input$my.value])),   x[x<input$my.value], dnorm(x[x<input$my.value], input$my.mean, input$my.sd), col="blue", ylab="Density")
+      
+      axis(1, at=c(input$my.mean-3*input$my.sd, input$my.mean-2*input$my.sd, input$my.mean-1*input$my.sd, input$my.mean, input$my.mean+input$my.sd, 
+                   input$my.mean+2*input$my.sd, input$my.mean+3*input$my.sd, input$my.value), cex.axis=2)
+      axis(2, cex.axis=2)
+      
+      
+      my.p0=pnorm(input$my.value, input$my.mean, input$my.sd)
+      my.p=ifelse(my.p0<0.0001, "<0.0001", paste("=", round(my.p0,4) )) 
+      if(my.p0>0.9999) my.p=">0.9999"
+      
+      
+      
+      legend("topleft", legend=paste("P(X<", input$my.value, ") ", "\n", my.p, sep=""), fill="blue", bty="n")
+      
+      
+      
+      #text(x=input$my.value, y=dnorm(input$my.value, input$my.mean, input$my.sd)+(par("usr")[4]-par("usr")[3])*.15, 
+      #     labels=paste("P(X<", input$my.value, ") ", my.p, sep="") , col="black", xpd=T, cex=2, adj=my.adj)
+      
+      
+      
+      
+      
+    }# end if distr = normal
+    
+    
+    if(input$distribution=="t"){
+      
+      
+      par(mfrow=c(1,3))
+      
+      
+      
+      #left-align for values below the mean, right align for values above the mean
+      my.adj=ifelse(input$my.value<0, 0, 1)
+      
+      
+      
+      my.max=max(5, abs(input$my.value)+ 0.5 )
+      #centering around the mean
+      x=seq(-my.max, my.max, length.out=10000)
+      plot(x, dt(x, input$df), type="l",main=paste("t density : t(" , input$df, ")",  sep=""),  ylab="Density", xlab="Value",
+           cex.main=2, cex.lab=1.5, cex.axis=2)   
+      
+      #segments(  x[x>abs(my.value)],  rep(0, length(x[x>abs(my.value)])),   x[x>abs(my.value)], dnorm(x[x>abs(my.value)], my.mean, my.sd), col="red")
+      
+      #segments(  x[x<(-abs(my.value))],  rep(0, length(x[x<(-abs(my.value))])),   x[x<(-abs(my.value))], dnorm(x[x<(-abs(my.value))], my.mean, my.sd), col="red")
+      
+      segments(  x[x>input$my.value],  rep(0, length(x[x>input$my.value])),   x[x>input$my.value], dt(x[x>input$my.value], input$df), col="red")
+      
+      my.p0=1-pt(input$my.value, input$df)
+      my.p=ifelse(my.p0<0.0001, "<0.0001", paste("=", round(my.p0,4) )) 
+      if(my.p0>0.9999) my.p=">0.9999"
+      
+      
+      # text(x=input$my.value, 
+      #       y=min(dt(input$my.value, input$df)+(par("usr")[4]-par("usr")[3])*.15, dt(0,input$df ) ), 
+      #       labels=paste("P(X>", input$my.value, ") ", my.p, sep="") , col="black", xpd=T, cex=2, adj=my.adj)
+      
+      
+      legend("topright", legend=paste("P(X>", input$my.value, ") ", "\n", my.p, sep=""), fill="red", bty="n")
+      
+      
+      
+      plot(x, dt(x, input$df), type="l", main=paste("t density : t(" , input$df, ")",  sep=""), ylab="Density", xlab="Value", 
+           cex.main=2, cex.lab=1.5, cex.axis=2)   
+      segments(  x[x<input$my.value],  rep(0, length(x[x<input$my.value])),   x[x<input$my.value], dt(x[x<input$my.value], input$df), col="blue", ylab="Density",
+                 cex.main=2, cex.lab=2, cex.axis=2)
+      
+      my.p0=pt(input$my.value, input$df)
+      my.p=ifelse(my.p0<0.0001, "<0.0001", paste("=", round(my.p0,4) )) 
+      if(my.p0>0.9999) my.p=">0.9999"
+      
+      
+      
+      #  text(x=input$my.value, 
+      #      y=min(dt(input$my.value, input$df)+(par("usr")[4]-par("usr")[3])*.15, dt(0,input$df ) ), 
+      #       labels=paste("P(X<", input$my.value, ") ", my.p, sep="") , col="black", xpd=T, cex=2, adj=my.adj)
+      
+      
+      
+      legend("topleft", legend=paste("P(X<", input$my.value, ") ", "\n", my.p, sep=""), fill="blue", bty="n") 
+      
+      
+      
+      ############# two-tailed
+      
+      plot(x, dt(x, input$df), type="l",main=paste("t density : t(" , input$df, ")",  sep=""),  ylab="Density", xlab="Value",
+           cex.main=2, cex.lab=1.5, cex.axis=2)   
+      
+      #segments(  x[x>abs(my.value)],  rep(0, length(x[x>abs(my.value)])),   x[x>abs(my.value)], dnorm(x[x>abs(my.value)], my.mean, my.sd), col="red")
+      
+      #segments(  x[x<(-abs(my.value))],  rep(0, length(x[x<(-abs(my.value))])),   x[x<(-abs(my.value))], dnorm(x[x<(-abs(my.value))], my.mean, my.sd), col="red")
+      
+      segments(  x[x>abs(input$my.value)],  rep(0, length(x[x>abs(input$my.value)])),   x[x>abs(input$my.value)], dt(x[x>abs(input$my.value)], input$df), col="red")
+      
+      my.p0=1-pt(abs(input$my.value), input$df)
+      my.p=ifelse(my.p0<0.0001, "<0.0001", paste("=", round(my.p0,4) )) 
+      if(my.p0>0.9999) my.p=">0.9999"
+      
+      #two-tailed probability
+      my.p2=ifelse(my.p0*2<0.0001, "<0.0001", paste("=", round(my.p0*2,4) )) 
+      if(my.p0*2>0.9999) my.p2=">0.9999"
+      
+      
+      
+      #    text(
+      #      #x=abs(input$my.value), 
+      #      x=max(x),
+      #      y=min(dt(abs(input$my.value), input$df)+(par("usr")[4]-par("usr")[3])*.25, dt(0,input$df ) ),
+      #         labels=paste("P(X>", abs(input$my.value), ") ", my.p, sep="") , col="black", xpd=T, cex=2, adj=1)
+      
+      
+      
+      
+      segments(  x[x<(-abs(input$my.value))],  rep(0, length(x[x<(-abs(input$my.value))])),   x[x<(-abs(input$my.value))], dt(x[x<(-abs(input$my.value))], input$df),
+                 col="red")
+      
+      # my.p0=1-pt(input$my.value, input$df)
+      # my.p=ifelse(my.p0<0.0001, "<0.0001", paste("=", round(my.p0,4) )) 
+      # if(my.p0>0.9999) my.p=">0.9999"
+      
+      
+      # text(#x=-abs(input$my.value), 
+      #   x=min(x),
+      #      y=min(dt(-abs(input$my.value), input$df)+(par("usr")[4]-par("usr")[3])*.15, dt(0,input$df ) ),
+      #      labels=paste("P(X<-", abs(input$my.value), ") ", my.p, sep="") , col="black", xpd=T, cex=2, adj=0)
+      
+      
+      
+      
+      #two-tailed probability 
+      
+      #text(x=0, y=dt(0, input$df)-(par("usr")[4]-par("usr")[3])*.15, 
+      #     labels=paste("P(X<-", abs(input$my.value), " or X>", abs(input$my.value), ") ", my.p2, sep="") , col="black", xpd=T, cex=2)
+      
+      
+      legend("topleft", legend=paste("P(X<-", abs(input$my.value), " or X>", abs(input$my.value), ") ", "\n", my.p2, sep=""), fill="red", bty="n")   
+      
+      
+      
+    }# end if distr = t
+    
+    
+    
+    
+    
+    
+    
+    
+    if(input$distribution=="chisq"){
+      
+      
+      par(mfrow=c(1,2))
+      
+      
+      
+      
+      my.max=max(qchisq(.999, input$df), input$my.value+ 0.5 )
+      #centering around the mean
+      
+      x=seq(qchisq(1- .999, input$df), my.max, length.out=10000)    
+      if(input$df==1)     x=seq(min(input$my.value, qchisq(1- .6, input$df)), my.max, length.out=10000)    
+      
+      
+      #left-align for values below the mean, right align for values above the mean
+      my.adj=ifelse(input$my.value<median(x), 0, 1)
+      
+      
+      
+      plot(x, dchisq(x, input$df), type="l",main=paste("chi-squared density: \n chi(" , input$df, ")",  sep=""),  ylab="Density", xlab="Value",
+           cex.main=1.5, cex.lab=1.5, cex.axis=2)   
+      
+      #segments(  x[x>abs(my.value)],  rep(0, length(x[x>abs(my.value)])),   x[x>abs(my.value)], dnorm(x[x>abs(my.value)], my.mean, my.sd), col="red")
+      
+      #segments(  x[x<(-abs(my.value))],  rep(0, length(x[x<(-abs(my.value))])),   x[x<(-abs(my.value))], dnorm(x[x<(-abs(my.value))], my.mean, my.sd), col="red")
+      
+      segments(  x[x>input$my.value],  rep(0, length(x[x>input$my.value])),   x[x>input$my.value], dchisq(x[x>input$my.value], input$df), col="red")
+      
+      my.p0=1-pchisq(input$my.value, input$df)
+      my.p=ifelse(my.p0<0.0001, "<0.0001", paste("=", round(my.p0,4) )) 
+      if(my.p0>0.9999) my.p=">0.9999"
+      
+      
+      #text(x=input$my.value, 
+      #    y=min(dchisq(input$my.value, input$df)+(par("usr")[4]-par("usr")[3])*.15, dt(0,input$df ) ), 
+      #     labels=paste("P(X>", input$my.value, ") ", my.p, sep="") , col="black", xpd=T, cex=2, adj=my.adj)
+      
+      legend("topright", legend=paste("P(X>", input$my.value, ") ", "\n", my.p, sep=""), fill="red", bty="n")
+      
+      
+      
+      
+      
+      plot(x, dchisq(x, input$df), type="l", main=paste("chi-squared density: \n chi(" , input$df, ")",  sep=""), ylab="Density", xlab="Value", 
+           cex.main=1.5, cex.lab=1.5, cex.axis=2)   
+      segments(  x[x<input$my.value],  rep(0, length(x[x<input$my.value])),   x[x<input$my.value], dchisq(x[x<input$my.value], input$df), col="blue", ylab="Density",
+                 cex.main=2, cex.lab=2, cex.axis=2)
+      
+      my.p0=pchisq(input$my.value, input$df)
+      my.p=ifelse(my.p0<0.0001, "<0.0001", paste("=", round(my.p0,4) )) 
+      if(my.p0>0.9999) my.p=">0.9999"
+      
+      
+      
+      #  text(x=input$my.value, 
+      #      y=min(dchisq(input$my.value, input$df)+(par("usr")[4]-par("usr")[3])*.15, dchisq(x[1],input$df ) ), 
+      #      labels=paste("P(X<", input$my.value, ") ", my.p, sep="") , col="black", xpd=T, cex=2, adj=my.adj)
+      
+      
+      
+      legend("topleft", legend=paste("P(X<", input$my.value, ") ", "\n", my.p, sep=""), fill="blue", bty="n") 
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+    }# end if distr = chisq
+    
+    
+    
+    
+    
+  })#end reactive barplot
+  
+  
+  
+  
+  
+  
+  
+  
+})

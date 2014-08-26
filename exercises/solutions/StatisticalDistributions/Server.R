@@ -3,100 +3,73 @@
 # load the library for developing web apps with R (http://shiny.rstudio.com/)
 library(shiny)
 
+# define the server-side logic of the Shiny application
 shinyServer(function(input, output) {
   
-  #prepare the user interface, based on the distribution that is selected by the user
-  
+  # build the menus for parameter selection based on the chosen distribution ####
   output$choose_parameters <- renderUI({
-    
-    out=tagList(  
-      #sliderInput("my.mean", "Mean:", value=0, min=-100, max=100), 
-      #sliderInput("my.sd", "Standard deviation", value=1, min=0.01, max=100) 
-      
-      # Exercise: change to slider input
-      numericInput("my.mean", "Mean:", value=0), 
-      numericInput("my.sd", "Standard deviation", value=1, min=0.00001)
-    ) 
-    
+    # return() if no distribution is selected
     if(is.null(input$distribution)) { return() }
     
+    # menus for parameter selection for normal distribution
     if(input$distribution=="norm") {
-      
       out=tagList(  
-        #sliderInput("my.mean", "Mean:", value=0, min=-100, max=100), 
-        #sliderInput("my.sd", "Standard deviation", value=1, min=0.01, max=100) 
-        
         numericInput("my.mean", "Mean:", value=0), 
         numericInput("my.sd", "Standard deviation", value=1, min=0.00001) 
-        
-        #, numericInput("my.value", "Choose a value", value=1.96) 
-      )
+        )
     }
     
+    # menus for parameter selection for binomial distribution
     if(input$distribution=="binom") {
-      
       out=tagList( 
-        #sliderInput("n", "Number of trials:", value=10, min=1, max=200),         
-        #sliderInput("my.p", "Probability of success:", 0.5, min=0, max=1) 
-        
         numericInput("n", "Number of trials:", value=10, min=1), 
         numericInput("my.p", "Probability of success:", 0.5, min=0, max=1, step=0.05) 
-        
-        #, numericInput("my.value", "Choose a value", value=5, min=0 ) 
-      )
+        )
     }
     
+    # menus for parameter selection for t distribution
     if(input$distribution=="t") {
-      
       out=tagList( 
-        #sliderInput("df", "Degrees of freedom:", value=10, min=1, max=200) 
         numericInput("df", "Degrees of freedom:", value=10, min=1)
-        
-        #, numericInput("my.value", "Choose a value", value=1.96) 
-      )
+        )
     }
     
+    # menus for parameter selection for chi-square distribution
     if(input$distribution=="chisq") {
-      
       out=tagList( 
-        
-        #sliderInput("df", "Degrees of freedom:", value=1, min=1, max=200) 
         numericInput("df", "Degrees of freedom:", value=1, min=1)
-        #,   numericInput("my.value", "Choose a value", value=3.84) 
-        
-      )
+        )
     }
     
+    # return the code for the menus for parameter selection
     return(out)
-    
-  })
+    })
   
-  
+  # define number of digits to print
   my.digits=4
   
+  # define the menus to use with each distribution on the tab ####
   output$choose_value=renderUI({
-    
+    # define initial quantile values
     if(input$distribution=="norm")  my.value.init=round(qnorm(.975, input$my.mean, input$my.sd),2)
     if(input$distribution=="t")  my.value.init=round(qt(.975, input$df),2)
     if(input$distribution=="chisq")  my.value.init=round(qchisq(.95, input$df), 2)
     if(input$distribution=="binom")  my.value.init=qbinom(.90, input$n, input$my.p)
-    
+    # define menu for entering values
     out=tagList( 
-      #sliderInput("df", "Degrees of freedom:", value=1, min=1, max=200) 
       numericInput("my.value", "Choose a value: ", value=my.value.init)
-      #,   numericInput("my.value", "Choose a value", value=3.84) 
-    )
-    
+      )
+    # define an additional menu for binomial distribution
     if(input$distribution=="binom")
       out=tagList( 
         numericInput("my.value", "Choose a value: ", value=my.value.init), 
         checkboxInput("my.gl", "Display P(X>=x) and P(X<x)", value=FALSE) )
-    #c("P(X>x) and P(X<=x)" = "gle",
-    
+    # return the code for the menus
     return(out)
   }
   )
   
+  # define table of links on Wikipedia ####
   output$text1=renderTable({
     
     WIKIPEDIA=c("http://en.wikipedia.org/wiki/Normal_distribution", "http://en.wikipedia.org/wiki/Chi-squared_distribution", "http://en.wikipedia.org/wiki/Binomial_distribution", "http://en.wikipedia.org/wiki/Student%27s_t-distribution" )
@@ -106,12 +79,12 @@ shinyServer(function(input, output) {
   }, sanitize.text.function = function(x) x)
   
   
-  ########### evaluate the complete table of probabilities
+  # define table of probabilities ####
   output$table.prob=renderTable({
+    # return() if no distribution is chosen
+    if(is.null(input$distribution)) { return() }
     
-    if(is.null(input$distribution))
-      return()
-    
+    # table of probabilities for normal distribution
     if(input$distribution=="norm"){
       
       x=seq(input$my.mean-4*input$my.sd, input$my.mean+4*input$my.sd, length.out=100)
@@ -120,6 +93,7 @@ shinyServer(function(input, output) {
       dimnames(my.table)[[2]]=c("x", "P(X<x)", "P(X>x)")
     }
     
+    # table of probabilities for t distribution
     if(input$distribution=="t"){
       
       x=seq(-5, 5, length.out=1000)
@@ -128,6 +102,7 @@ shinyServer(function(input, output) {
       dimnames(my.table)[[2]]=c("x", "P(X<x)", "P(X>x)")
     }
     
+    # table of probabilities for chi-square distribution
     if(input$distribution=="chisq"){
       
       x=seq(qchisq(1-.99, input$df),  qchisq(.99, input$df), length.out=1000)
@@ -136,81 +111,67 @@ shinyServer(function(input, output) {
       dimnames(my.table)[[2]]=c("x", "P(X<x)", "P(X>x)")
     }
     
+    # table of probabilities for binomial distribution
     if(input$distribution=="binom"){
       my.table=cbind(0:input$n, dbinom(0:input$n, size=input$n, prob=input$my.p),pbinom(0:input$n, size=input$n, prob=input$my.p) )
       dimnames(my.table)[[2]]=c("k", "P(K=k)", "P(K<=k)")
-      
     }
     
+    # return the table of probabilities
     return(my.table)
     
-    
+    # pass additional parameters for table output formating to renderTable()
   }, digits=c(my.digits, my.digits, 4, 4), include.rownames=FALSE)  
   
-  ################ evaluates the quantiles for the distribution
-  
+  # define table of quantiles ####
   output$my.table.quantiles=renderTable({
+    # return() if no distribution is selected
+    if(is.null(input$distribution)) { return() }
     
-    if(is.null(input$distribution))
-      return()
-    
-    if(input$distribution=="norm"){
-      
+    # table of quantiles for normal distribution
+    if(input$distribution=="norm") {
       my.sign=c(0.05, 0.01, 0.001)
-      
       my.val1.q=qnorm(1-my.sign/2, input$my.mean, input$my.sd)
-      
       my.val2.q=qnorm(my.sign/2, input$my.mean, input$my.sd)
-      
       my.table.2=as.table(cbind(1-my.sign, my.val2.q, my.val1.q))
       dimnames(my.table.2)[[2]]=c("Proportion of observations in the interval", "Lower value", "Upper value")
     }
     
-    if(input$distribution=="t"){
-      
+    # table of quantiles for t distribution
+    if(input$distribution=="t") {
       my.sign=c(0.05, 0.01, 0.001)
-      
       my.val1=qt(1-my.sign/2, input$df)
-      
-      my.val2=qt(my.sign/2, input$df)
-      
+      my.val2=qt(my.sign/2, input$df)      
       my.table.2=as.table(cbind(1-my.sign, my.val2, my.val1))
       dimnames(my.table.2)[[2]]=c("Proportion of observations in the interval", "Lower value", "Upper value")
     }
     
-    
+    # table of quantiles for chi-sq distribution
     if(input$distribution=="chisq"){
-      
-      my.sign=c(0.05, 0.01, 0.001)
-      
+      my.sign=c(0.05, 0.01, 0.001)      
       my.val1=qchisq(1-my.sign, input$df)
-      
       my.val2=qchisq(0, input$df)
-      
       my.table.2=as.table(cbind(1-my.sign, my.val2,  my.val1))
       dimnames(my.table.2)[[2]]=c("Proportion of observations in the interval", "Lower value", "Upper value")
     }
     
-    if(input$distribution=="binom"){
-      
+    # table of quantiles for binomial distribution
+    if(input$distribution=="binom") {
       my.sign=c(0.05, 0.01, 0.001)
-      
-      my.val1=qbinom(1-my.sign/2, input$n, input$my.p)
-      
-      my.val2=qbinom(my.sign/2, input$n, input$my.p)
-      
+      my.val1=qbinom(1-my.sign/2, input$n, input$my.p)      
+      my.val2=qbinom(my.sign/2, input$n, input$my.p)      
       my.val3=numeric(length(my.sign))
       for(i in 1:length(my.sign))
         my.val3[i]=sum(dbinom(my.val2[i]:my.val1[i], input$n, input$my.p))
-      
       my.table.2=as.table(cbind(1-my.sign, my.val2,  my.val1, my.val3))
       dimnames(my.table.2)[[2]]=c("Approximate proportion of observations in the interval", "Lower value", "Upper value", "Exact proportion of observations in the interval")
     }
     
+    # return the table of quantiles
     return(my.table.2)
-    
   }, digits=4 )
   
+  # WHAT IS THIS PLOT - IS IT EVEN PLOTTED? ####
   output$barplot.d=renderPlot({
     
     if(is.null(input$distribution))
@@ -244,13 +205,13 @@ shinyServer(function(input, output) {
     
   })# end my.table.value
   
-  ################# table with the tail probabilities
   
+  # define table of tail probabilities ####
   output$my.table.value=renderTable({
+    # return() if no distribution is selected
+    if(is.null(input$distribution)) { return() }
     
-    if(is.null(input$distribution))
-      return()
-    
+    # table for normal distribution
     if(input$distribution=="norm") {
       
       my.val1=pnorm(input$my.value, input$my.mean, input$my.sd)
@@ -265,6 +226,7 @@ shinyServer(function(input, output) {
       dimnames(my.table.2)[[1]]=c("Value", paste("P(X<", input$my.value, ")", sep=""),  paste("P(X>", input$my.value, ")", sep=""))
     }
     
+    # table for t distribution
     if(input$distribution=="t") {
       
       my.val1=pt(input$my.value, input$df)
@@ -276,11 +238,11 @@ shinyServer(function(input, output) {
       if(my.val2>0.9999) my.val2.ok=">0.9999"
       
       my.table.2=as.table(c(input$my.value, my.val1, my.val2))
-      dimnames(my.table.2)[[1]]=c("Value", paste("P(X<", input$my.value, ")", sep=""),  paste("P(X>", input$my.value, ")", sep=""))
-      
+      dimnames(my.table.2)[[1]]=c("Value", paste("P(X<", input$my.value, ")", sep=""),  paste("P(X>", input$my.value, ")", sep=""))      
     }
     
-    if(input$distribution=="chisq"){
+    # table for chi-square distribution
+    if(input$distribution=="chisq") {
       
       my.val1=pchisq(input$my.value, input$df)
       my.val1.ok=ifelse(my.val1<0.0001, "<0.0001", round(my.val1,4))    
@@ -294,6 +256,7 @@ shinyServer(function(input, output) {
       dimnames(my.table.2)[[1]]=c("Value", paste("P(X<", input$my.value, ")", sep=""),  paste("P(X>", input$my.value, ")", sep=""))
     }
     
+    # table for binomial distribution
     if(input$distribution=="binom") {
       
       my.val1=pbinom(input$my.value, input$n, input$my.p)
@@ -309,9 +272,9 @@ shinyServer(function(input, output) {
       
       my.table.2=as.table(c(input$my.value, my.val1, my.val2, my.val3))
       dimnames(my.table.2)[[1]]=c("Value", paste("P(K<=", input$my.value, ")", sep=""),  paste("P(K>", input$my.value, ")", sep=""), paste("P(K=", input$my.value, ")", sep=""))
-      
     }
     
+    # return the table of tail probabilities
     return(my.table.2)
     
   }, digits=4 )

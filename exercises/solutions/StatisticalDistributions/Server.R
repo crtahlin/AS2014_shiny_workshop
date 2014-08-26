@@ -1,4 +1,8 @@
+# Applied Statistics 2014 conference workshop
+
+# load the library for developing web apps with R (http://shiny.rstudio.com/)
 library(shiny)
+
 shinyServer(function(input, output) {
   
   #prepare the user interface, based on the distribution that is selected by the user

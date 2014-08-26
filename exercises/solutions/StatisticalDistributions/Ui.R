@@ -1,18 +1,19 @@
-#ui.R
+# Applied Statistics 2014 conference workshop
 
+# load the library for developing web apps with R (http://shiny.rstudio.com/)
 library(shiny)
+
+# define the user interface
 shinyUI(
-  
+  # define type of page layout
   pageWithSidebar(
     
-    
-    
-    
+    # define content of page header ####
     headerPanel("Statistical distributions"),
     
+    # define content of left side of the page ####
     sidebarPanel(
-      
-      
+      # select which distrubution will be used
       radioButtons("distribution", "Distribution type:",
                    list("Normal" = "norm",
                         "Chi-squared" = "chisq",
@@ -20,69 +21,26 @@ shinyUI(
                         "t" = "t"), selected="norm"),
       
       uiOutput("choose_parameters")
-      
-      #numericInput("n", "Number of trials:", value=10, min=1), 
-      
-      #numericInput("my.p", "Probability of success:", 0.5, min=0, max=1, step=.1), 
-      
-      
-      
-      
-      #numericInput("k", "Number of successes:", value=5, min=0), 
-      
-      
-      
-      
-      
-      
-    ),
+      ),
     
-    
+    # define content of the main part of the page ####   
     mainPanel(
-      
+      # define the tabs on the page
       tabsetPanel(
-        
-        tabPanel("Plot of the distribution",        plotOutput("plot.density"), 
+        # define contents of 1st tab
+        tabPanel("Plot of the distribution", plotOutput("plot.density"), 
                  tableOutput("my.table.quantiles")),
-        
-        # tabPanel("Plot",        plotOutput("barplot.d")), 
-        # tabPanel("Table2", tableOutput("my.table.value")),               
-        #tabPanel("Table3", textOutput("text2")),
-        
-        
-        #evaluate quantities that are related to a specific value
-        
+        # define contents of 2nd tab        
         tabPanel(title="Plots and probabilities for the chosen value", 
-                 # numericInput("my.value", "Choose a value: ", value="my.value.init"), #shifted the choice of the value at this tabset
                  uiOutput("choose_value"), 
                  plotOutput("plot.value"),
                  tableOutput("my.table.value")
-                 
-                 
-        ),
-        
-        
-        #evaluate the complete table of probabilities
+                 ),
+        # define contents of 3rd tab
         tabPanel("Table", tableOutput("table.prob")),
-        
-        #tableOutput("my.table.value")),
-        #plotOutput("barplot.d2")),
-        #                      
-        #                      }
-        #                      ),               
-        
-        
+        # define contents of 4th tab
         tabPanel("Links", tableOutput("text1"))
-        
-        
-      )      
-      #        plotOutput("barplot.d"),
-      #h3(textOutput(paste("min=", min("input$obs1")))),
-      #        tableOutput("table.binom")
-      
+        )
+      )
     )
-    
-    
-    
-    
-  ))
+  )

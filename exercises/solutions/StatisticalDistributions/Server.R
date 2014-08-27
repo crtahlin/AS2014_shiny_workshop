@@ -6,8 +6,8 @@ library(shiny)
 # define the server-side logic of the Shiny application
 shinyServer(function(input, output) {
   
-  # output$choose_parameters : build the menus for parameter selection based on the chosen distribution ####
-  output$choose_parameters <- renderUI({
+  # output$chooseParameters : build the menus for parameter selection based on the chosen distribution ####
+  output$chooseParameters <- renderUI({
     # return() if no distribution is selected
     if(is.null(input$distribution)) { return() }
     
@@ -48,9 +48,9 @@ shinyServer(function(input, output) {
   # define number of digits to print
   my.digits=4
   
-  # output$choose_value : define the menus to use with each distribution on the tab ####
-  output$choose_value=renderUI({
-    # define initial quantile values
+  # output$chooseValue : define the menus to use with each distribution on the tab ####
+  output$chooseValue=renderUI({
+    # define initial values
     if(input$distribution=="norm")  my.value.init=round(qnorm(.975, input$my.mean, input$my.sd),2)
     if(input$distribution=="t")  my.value.init=round(qt(.975, input$df),2)
     if(input$distribution=="chisq")  my.value.init=round(qchisq(.95, input$df), 2)
@@ -69,8 +69,8 @@ shinyServer(function(input, output) {
   }
   )
   
-  # output$text1 : define table of links on Wikipedia ####
-  output$text1=renderTable({
+  # output$wikipediaLinks : define table of links on Wikipedia ####
+  output$wikipediaLinks=renderTable({
     
     WIKIPEDIA=c("http://en.wikipedia.org/wiki/Normal_distribution", "http://en.wikipedia.org/wiki/Chi-squared_distribution", "http://en.wikipedia.org/wiki/Binomial_distribution", "http://en.wikipedia.org/wiki/Student%27s_t-distribution" )
     WIKIPEDIA=paste0("<a href='",  WIKIPEDIA, c("' target='_blank'>Normal distribution</a>", "' target='_blank'>Chi-squared distribution</a>", "' target='_blank'>Binomial distribution</a>", "' target='_blank'>t distribution</a>"))
@@ -79,8 +79,8 @@ shinyServer(function(input, output) {
   }, sanitize.text.function = function(x) x)
   
   
-  # output$table.prob : define table of probabilities ####
-  output$table.prob=renderTable({
+  # output$tabularProbabilities : define table of probabilities ####
+  output$tabularProbabilities=renderTable({
     # return() if no distribution is chosen
     if(is.null(input$distribution)) { return() }
     
@@ -123,8 +123,8 @@ shinyServer(function(input, output) {
     # pass additional parameters for table output formating to renderTable()
   }, digits=c(my.digits, my.digits, 4, 4), include.rownames=FALSE)  
   
-  # output$my.table.quantiles : define table of quantiles ####
-  output$my.table.quantiles=renderTable({
+  # output$tabularQuantiles : define table of quantiles ####
+  output$tabularQuantiles=renderTable({
     # return() if no distribution is selected
     if(is.null(input$distribution)) { return() }
     
@@ -206,8 +206,8 @@ shinyServer(function(input, output) {
   })# end my.table.value
   
   
-  # output$my.table.value : define table of tail probabilities ####
-  output$my.table.value=renderTable({
+  # output$tabularValue : define table of tail probabilities ####
+  output$tabularValue=renderTable({
     # return() if no distribution is selected
     if(is.null(input$distribution)) { return() }
     
@@ -279,8 +279,8 @@ shinyServer(function(input, output) {
     
   }, digits=4 )
   
-  # output$plot.density : define the distribution density plots ####
-  output$plot.density=renderPlot({
+  # output$plotDensity : define the distribution density plots ####
+  output$plotDensity=renderPlot({
     # return() of no distribution is selected
     if(is.null(input$distribution)) { return() }
     
@@ -357,8 +357,8 @@ shinyServer(function(input, output) {
   })#end reactive barplot
   
   
-  # output$plot.value : define distribution density where the focus is given to a specific value ####
-  output$plot.value=renderPlot({
+  # output$plotValue : define distribution density where the focus is given to a specific value ####
+  output$plotValue=renderPlot({
     # return() if no distribution is selected
     if(is.null(input$distribution)) { return() }
     

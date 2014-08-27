@@ -20,7 +20,7 @@ shinyUI(
                         "Binomial" = "binom",
                         "t" = "t"), selected="norm"),
       
-      uiOutput("choose_parameters")
+      uiOutput("chooseParameters")
       ),
     
     # define content of the main part of the page ####   
@@ -28,18 +28,18 @@ shinyUI(
       # define the tabs on the page
       tabsetPanel(
         # define contents of 1st tab
-        tabPanel("Plot of the distribution", plotOutput("plot.density"), 
-                 tableOutput("my.table.quantiles")),
+        tabPanel("Plot of the distribution", plotOutput("plotDensity"), 
+                 tableOutput("tabularQuantiles")),
         # define contents of 2nd tab        
         tabPanel(title="Plots and probabilities for the chosen value", 
-                 uiOutput("choose_value"), 
-                 plotOutput("plot.value"),
-                 tableOutput("my.table.value")
+                 uiOutput("chooseValue"), 
+                 plotOutput("plotValue"),
+                 tableOutput("tabularValue")
                  ),
         # define contents of 3rd tab
-        tabPanel("Table", tableOutput("table.prob")),
+        tabPanel("Table", tableOutput("tabularProbabilities")),
         # define contents of 4th tab
-        tabPanel("Links", tableOutput("text1"))
+        tabPanel("Links", tableOutput("wikipediaLinks"))
         )
       )
     )

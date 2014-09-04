@@ -1,0 +1,34 @@
+## Exercises
+### Exercise 1
+Tasks:
+
+1. Ui.R : Define a plotOutput() of the "plotDensity".
+2. Server.R : Generate plot of standard normal distribution probability density and put it into output slot "plotDensity".
+
+### Exercise 2
+Tasks:
+
+1. Ui.R : Add widget for selecting mean of the normal distribution with numericInput() and assigning it slot "meanValue". Check which arguments numericInput() takes.
+2. Server.R : Add "input$meanValue" as parameter for plotting.
+
+### Exercise 3
+Tasks:
+
+1. Ui.R : Add a widget for selecting standard deviation of the normal distribution with sliderInput() and assign it to slot "sdValue". Check which arguments sliderInput() takes.
+2. Server.R : Add "input$sdValue" as parameter for plotting.
+
+### Exercise 4
+Tasks:
+
+1. Ui.R : Add a checkbox widget for selecting whether to plot a line at the mean. Assign result to slot "plotMean". Check which arguments "checkboxInput()" takes.
+2. Server.R : Add a vertical line at the mean, if "plotMean==TRUE". (Hint: Use abline(), make sure there is an "expression" inside renderPlot())
+
+### Exercise 5
+Tasks:
+
+1. Ui.R : Add a menu to select which color to use for the curve via selectInput() and assign the selection to "curveColor". check which arguments selectInput() takes. 
+2. Server.R : Use selected color for the density curve. 
+3. Ui.R : Add horizontal lines between items on the menu via hr(), to visualy separate the items. 
+
+EOF
+

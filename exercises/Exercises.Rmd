@@ -30,5 +30,11 @@ Tasks:
 2. Server.R : Use selected color for the density curve. 
 3. Ui.R : Add horizontal lines between items on the menu via hr(), to visualy separate the items. 
 
+### Exercise 6
+Tasks:
+
+1. Ui.R : Enable user to set title for the plot and label for the plot vertical axis. Use textInput() for this and assign values to slots "plotTitle" and "verticalLabel".
+2. Server.R : Use the values to label the vertical axis and the plot title. 
+
 EOF
 

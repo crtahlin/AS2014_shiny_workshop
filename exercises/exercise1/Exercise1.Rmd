@@ -1,7 +1,0 @@
-### Exercise 1
-#### TASK 1
-Ui.R : define a plotOutput() of the "plotDensity"
-
-#### TASK 2 
-Server.R : generate plot of standard normal distribution and put it into
-output slot "plotDensity"

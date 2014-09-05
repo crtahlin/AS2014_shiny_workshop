@@ -1,5 +1,0 @@
-### Exercise 2
-Tasks:
-
-1. Ui.R : add widget for selecting mean of the normal distribution ( numericInput() )
-2. Server.R : add selection as parameter for plotting

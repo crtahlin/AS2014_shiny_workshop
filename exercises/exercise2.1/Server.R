@@ -6,8 +6,12 @@ library(shiny)
 # define the server-side logic of the Shiny application
 shinyServer(function(input, output) {
   
-  output$plotDensity <- renderPlot(
-    curve(dnorm, from=-4, to=4)
-    )
+  data <- reactive({
+    read.csv2(input$uploadedFile$datapath)
+    })
+  
+  output$data <- renderDataTable({
+    data()
+    })
   
 })

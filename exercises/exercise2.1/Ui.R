@@ -6,12 +6,16 @@ shinyUI(
   pageWithSidebar(
     
     # define content of page header ####
-    headerPanel("Statistical distributions"),
+    headerPanel("Company statistics"),
     
     # define content of left side of the page ####
-    sidebarPanel(),
+    sidebarPanel(
+      fileInput(inputId = "uploadedFile", label="Upload file")
+      ),
     
     # define content of the main part of the page ####   
-    mainPanel()
+    mainPanel(
+      dataTableOutput("data")
+      )
   )
 )

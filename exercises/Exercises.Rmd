@@ -1,40 +1,96 @@
-## Exercises
-### Exercise 1
+# Exercises
+## Exercise 1
+### Exercise 1.1
 Tasks:
 
 1. Ui.R : Define a plotOutput() of the "plotDensity".
 2. Server.R : Generate plot of standard normal distribution probability density and put it into output slot "plotDensity".
 
-### Exercise 2
+### Exercise 1.2
 Tasks:
 
 1. Ui.R : Add widget for selecting mean of the normal distribution with numericInput() and assigning it slot "meanValue". Check which arguments numericInput() takes.
 2. Server.R : Add "input$meanValue" as parameter for plotting.
 
-### Exercise 3
+### Exercise 1.3
 Tasks:
 
 1. Ui.R : Add a widget for selecting standard deviation of the normal distribution with sliderInput() and assign it to slot "sdValue". Check which arguments sliderInput() takes.
 2. Server.R : Add "input$sdValue" as parameter for plotting.
 
-### Exercise 4
+### Exercise 1.4
 Tasks:
 
 1. Ui.R : Add a checkbox widget for selecting whether to plot a line at the mean. Assign result to slot "plotMean". Check which arguments "checkboxInput()" takes.
 2. Server.R : Add a vertical line at the mean, if "plotMean==TRUE". (Hint: Use abline(), make sure there is an "expression" inside renderPlot())
 
-### Exercise 5
+### Exercise 1.5
 Tasks:
 
 1. Ui.R : Add a menu to select which color to use for the curve via selectInput() and assign the selection to "curveColor". check which arguments selectInput() takes. 
 2. Server.R : Use selected color for the density curve. 
 3. Ui.R : Add horizontal lines between items on the menu via hr(), to visualy separate the items. 
 
-### Exercise 6
+### Exercise 1.6
 Tasks:
 
 1. Ui.R : Enable user to set title for the plot and label for the plot vertical axis. Use textInput() for this and assign values to slots "plotTitle" and "verticalLabel".
 2. Server.R : Use the values to label the vertical axis and the plot title. 
 
-EOF
+### Exercise 1.7
+Tasks:
+
+1. Server.R : Prepare a table with two columns: the variable values from -4 to 4; the probability densities for these values. Use renderTable() for this and assign the output to "tableDensity" slot. 
+2. Ui.R : Use tableOutput() to output the generated table.
+
+### Exercise 1.8
+Tasks:
+
+1. Ui.R: Create two tabs - put the graph on the first one and the table on the second one. Use tabsetPanel() and tabPanel().
+2. Server.R : Make the column with probability density values display 4 decimal places instead of 2. (Hint: pass the "digits" argument to xtable.)
+
+### Exercise 1.9
+Tasks:
+
+1. Issue command `library(shinyapps)` in the R console.
+2. Login into [shinyapps](https://www.shinyapps.io/login). Find the "tokens" section and click "Show" next to your token. Use the "Copy to Clipboard" button. Paste to R console.
+3. Issue command `deployApp(appDir="FOLDERWITHSHINYCODE", appName="NormalDistribution")`. The code and required packages will get installed to the remote server. A web page will open with the app running remotely. 
+
+## Exercise 2
+### Exercise 2.1
+Tasks: 
+
+1. Ui.R : Create a file upload button using fileInput(). Assign upload to slot "uploadedFile". See details of the fileInput() function in its help, to see where the file is uploaded. 
+2. Server.R : Process the uploaded file - import data from it using read.csv2() using a reactive() function and assigning the function the name "data". 
+3. Ui.R : Create a dataTableOutput() output, that will output a table on the screen using the data in the slot "data".
+4. Server.R : Put data in the correct form into slot "data" using renderDataTable(). Test.
+
+### Exercise 2.2
+Tasks:
+
+1. Ui.R : Create a place for a plot of the data using plotOutput("barPlot").
+2. Server.R : Create a barplot() of the data and assign it to "barPlot" slot. Be careful to reference the reactive function data() and not an object data.
+3. Ui.R : Create tabs - one for the table and another for the plot (and other outputs). Put the plot on the other tab. 
+
+### Exercise 2.3
+Tasks:
+
+1. Server.R : Create a reactive function called "variableNames" which return the names of the variables in the uploded data. 
+2. Server.R : Create a menu to render on the GUI using renderUI()  (see help for details of the function) and assign it to slot "variableSelection". The menu should use selectInput() and offer the names of the variables as options. The selected variable should be saved into slot "selectedVariable". 
+3. Ui.R : Add the created menu to the sidebar using uiOutput() function. 
+4. Use the selection made as the height of the barplot columns. (Hint: Use [] for subsetting data().)
+
+### Exercise 2.4
+Tasks: 
+
+1. Ui.R : Add a submitButton() that will delay execution of changes (reactivity will "wait" for user clicking the button). 
+2. Server.R : Call a downloadHandler() (see help for details) and make it prepare the data for download via the write.csv2() function. Assign results to "downloadData". 
+3. Ui.R : Use downloadButton() below the table with data to enable the user to download it.
+
+### Exercise 2.5
+Tasks:
+
+1. Server.R : We are getting errors ("Error: 'file' must be a character string or connection") put to screen, since there is no data to be loaded. Add `if(is.null(input$uploadedFile)) {return()}` to the function reading the data.
+
+Thank you for attending the workshop!
 

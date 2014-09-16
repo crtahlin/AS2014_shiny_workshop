@@ -3,6 +3,7 @@
 
 1. Ui.R : Define a plotOutput() of the "plotDensity".
 2. Server.R : Generate plot of standard normal distribution probability density and put it into output slot "plotDensity".
+3. Run the app. Note: Explain how to use browser() for debuging. 
 
 ### Exercise 1.2
 
@@ -99,6 +100,8 @@
 
 ### Exercise 4.1
 1. Try to run an app remotely from GitHub. Issue: `runGitHub(repo="AS2014_shiny_workshop", username="crtahlin", subdir="exercises/exercise1.9")`
+2. Try to run the directly from an URL. The app has to be in some sort of compressed format (we will use GitHub to store a ZIP file, note the path is somewhat strange in this case). Issue: `runUrl("https://github.com/crtahlin/AS2014_shiny_workshop/blob/master/exercises/exercise4.1/example.zip?raw=true", filetype=".zip")`
+Note: Discuss other options for app execution (local, server, shinyapp, running from a remote URL).
 
 ## Conclusion
 Thats' it. We hope you have learned something useful for you work. Thank you for attending the workshop!

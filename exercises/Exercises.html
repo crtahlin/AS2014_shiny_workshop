@@ -53,11 +53,10 @@ if (window.hljs && document.readyState && document.readyState === "complete") {
 
 
 
-<div id="exercises" class="section level1">
-<h1>Exercises</h1>
+<div id="exercise-1" class="section level2">
+<h2>Exercise 1</h2>
 <div id="exercise-1.1" class="section level3">
 <h3>Exercise 1.1</h3>
-<p>Tasks:</p>
 <ol style="list-style-type: decimal">
 <li>Ui.R : Define a plotOutput() of the “plotDensity”.</li>
 <li>Server.R : Generate plot of standard normal distribution probability density and put it into output slot “plotDensity”.</li>
@@ -65,7 +64,6 @@ if (window.hljs && document.readyState && document.readyState === "complete") {
 </div>
 <div id="exercise-1.2" class="section level3">
 <h3>Exercise 1.2</h3>
-<p>Tasks:</p>
 <ol style="list-style-type: decimal">
 <li>Ui.R : Add widget for selecting mean of the normal distribution with numericInput() and assigning it slot “meanValue”. Check which arguments numericInput() takes.</li>
 <li>Server.R : Add “input$meanValue” as parameter for plotting.</li>
@@ -73,7 +71,6 @@ if (window.hljs && document.readyState && document.readyState === "complete") {
 </div>
 <div id="exercise-1.3" class="section level3">
 <h3>Exercise 1.3</h3>
-<p>Tasks:</p>
 <ol style="list-style-type: decimal">
 <li>Ui.R : Add a widget for selecting standard deviation of the normal distribution with sliderInput() and assign it to slot “sdValue”. Check which arguments sliderInput() takes.</li>
 <li>Server.R : Add “input$sdValue” as parameter for plotting.</li>
@@ -81,7 +78,6 @@ if (window.hljs && document.readyState && document.readyState === "complete") {
 </div>
 <div id="exercise-1.4" class="section level3">
 <h3>Exercise 1.4</h3>
-<p>Tasks:</p>
 <ol style="list-style-type: decimal">
 <li>Ui.R : Add a checkbox widget for selecting whether to plot a line at the mean. Assign result to slot “plotMean”. Check which arguments “checkboxInput()” takes.</li>
 <li>Server.R : Add a vertical line at the mean, if “plotMean==TRUE”. (Hint: Use abline(), make sure there is an “expression” inside renderPlot())</li>
@@ -89,7 +85,6 @@ if (window.hljs && document.readyState && document.readyState === "complete") {
 </div>
 <div id="exercise-1.5" class="section level3">
 <h3>Exercise 1.5</h3>
-<p>Tasks:</p>
 <ol style="list-style-type: decimal">
 <li>Ui.R : Add a menu to select which color to use for the curve via selectInput() and assign the selection to “curveColor”. check which arguments selectInput() takes.</li>
 <li>Server.R : Use selected color for the density curve.</li>
@@ -98,7 +93,6 @@ if (window.hljs && document.readyState && document.readyState === "complete") {
 </div>
 <div id="exercise-1.6" class="section level3">
 <h3>Exercise 1.6</h3>
-<p>Tasks:</p>
 <ol style="list-style-type: decimal">
 <li>Ui.R : Enable user to set title for the plot and label for the plot vertical axis. Use textInput() for this and assign values to slots “plotTitle” and “verticalLabel”.</li>
 <li>Server.R : Use the values to label the vertical axis and the plot title.</li>
@@ -106,7 +100,6 @@ if (window.hljs && document.readyState && document.readyState === "complete") {
 </div>
 <div id="exercise-1.7" class="section level3">
 <h3>Exercise 1.7</h3>
-<p>Tasks:</p>
 <ol style="list-style-type: decimal">
 <li>Server.R : Prepare a table with two columns: the variable values from -4 to 4; the probability densities for these values. Use renderTable() for this and assign the output to “tableDensity” slot.</li>
 <li>Ui.R : Use tableOutput() to output the generated table.</li>
@@ -114,7 +107,6 @@ if (window.hljs && document.readyState && document.readyState === "complete") {
 </div>
 <div id="exercise-1.8" class="section level3">
 <h3>Exercise 1.8</h3>
-<p>Tasks:</p>
 <ol style="list-style-type: decimal">
 <li>Ui.R: Create two tabs - put the graph on the first one and the table on the second one. Use tabsetPanel() and tabPanel().</li>
 <li>Server.R : Make the column with probability density values display 4 decimal places instead of 2. (Hint: pass the “digits” argument to xtable.)</li>
@@ -122,13 +114,84 @@ if (window.hljs && document.readyState && document.readyState === "complete") {
 </div>
 <div id="exercise-1.9" class="section level3">
 <h3>Exercise 1.9</h3>
-<p>Tasks:</p>
 <ol style="list-style-type: decimal">
 <li>Issue command <code>library(shinyapps)</code> in the R console.</li>
-<li>If you have an account, login into <a href="https://www.shinyapps.io/login">shinyapps</a>. Find the “tokens” section and click “Show” next to your token. Use the “Copy to Clipboard” button. Paste to R console. lib</li>
+<li>Login into <a href="https://www.shinyapps.io/login">shinyapps</a>. Find the “tokens” section and click “Show” next to your token. Use the “Copy to Clipboard” button. Paste to R console.</li>
+<li>Issue command <code>deployApp(appDir=&quot;FOLDERWITHSHINYCODE&quot;, appName=&quot;NormalDistribution&quot;)</code>. The code and required packages will get installed to the remote server. A web page will open with the app running remotely.</li>
 </ol>
-<p>EOF</p>
 </div>
+</div>
+<div id="exercise-2" class="section level2">
+<h2>Exercise 2</h2>
+<div id="exercise-2.1" class="section level3">
+<h3>Exercise 2.1</h3>
+<ol style="list-style-type: decimal">
+<li>Ui.R : Create a file upload button using fileInput(). Assign upload to slot “uploadedFile”. See details of the fileInput() function in its help, to see where the file is uploaded.</li>
+<li>Server.R : Process the uploaded file - import data from it using read.csv2() using a reactive() function and assigning the function the name “data”.</li>
+<li>Ui.R : Create a dataTableOutput() output, that will output a table on the screen using the data in the slot “data”.</li>
+<li>Server.R : Put data in the correct form into slot “data” using renderDataTable(). Test.</li>
+</ol>
+</div>
+<div id="exercise-2.2" class="section level3">
+<h3>Exercise 2.2</h3>
+<ol style="list-style-type: decimal">
+<li>Ui.R : Create a place for a plot of the data using plotOutput(“barPlot”).</li>
+<li>Server.R : Create a barplot() of the data and assign it to “barPlot” slot. Be careful to reference the reactive function data() and not an object data.</li>
+<li>Ui.R : Create tabs - one for the table and another for the plot (and other outputs). Put the plot on the other tab.</li>
+</ol>
+</div>
+<div id="exercise-2.3" class="section level3">
+<h3>Exercise 2.3</h3>
+<ol style="list-style-type: decimal">
+<li>Server.R : Create a reactive function called “variableNames” which return the names of the variables in the uploded data.</li>
+<li>Server.R : Create a menu to render on the GUI using renderUI() (see help for details of the function) and assign it to slot “variableSelection”. The menu should use selectInput() and offer the names of the variables as options. The selected variable should be saved into slot “selectedVariable”.</li>
+<li>Ui.R : Add the created menu to the sidebar using uiOutput() function.</li>
+<li>Use the selection made as the height of the barplot columns. (Hint: Use [] for subsetting data().)</li>
+</ol>
+</div>
+<div id="exercise-2.4" class="section level3">
+<h3>Exercise 2.4</h3>
+<ol style="list-style-type: decimal">
+<li>Ui.R : Add a submitButton() that will delay execution of changes (reactivity will “wait” for user clicking the button).</li>
+<li>Server.R : Call a downloadHandler() (see help for details) and make it prepare the data for download via the write.csv2() function. Assign results to “downloadData”.</li>
+<li>Ui.R : Use downloadButton() below the table with data to enable the user to download it.</li>
+</ol>
+</div>
+<div id="exercise-2.5" class="section level3">
+<h3>Exercise 2.5</h3>
+<ol style="list-style-type: decimal">
+<li>Server.R : We are getting errors (“Error: ‘file’ must be a character string or connection”) put to screen, since there is no data to be loaded. Add <code>if(is.null(input$uploadedFile)) {return()}</code> to the function reading the data.</li>
+</ol>
+</div>
+</div>
+<div id="exercise-3" class="section level2">
+<h2>Exercise 3</h2>
+<div id="exercise-3.1" class="section level3">
+<h3>Exercise 3.1</h3>
+<ol style="list-style-type: decimal">
+<li>Use RStudio to open a new “shiny markdown” document. File -&gt; New file -&gt; Rmarkdown. Select “Shiny” option and give the document a title. A template file will open with some demo code already in it.</li>
+<li>Save the file to your drive with the .Rmd suffix.</li>
+<li>Use the Run document command in Rstudio to execute the interactive document.</li>
+</ol>
+</div>
+<div id="exercise-3.2" class="section level3">
+<h3>Exercise 3.2</h3>
+<ol style="list-style-type: decimal">
+<li>Change template file to run one of our apps (e.g., exercise 1.9).</li>
+<li>Add to the template file another section “Scatterplot of the eruptions data”, where you plot() the scatterplot of x=faithful$eruptions, y=faithful$waiting. Add two textInput() boxes, where the user can define/change the plot axis labels.</li>
+</ol>
+</div>
+<div id="exercise-3.3" class="section level3">
+<h3>Exercise 3.3</h3>
+<ol style="list-style-type: decimal">
+<li>Remove the code refering to our embededd application (since it contains relative references, our next step otherwise won’t work.).</li>
+<li>Try to deploy your app to shinyapp.io, using the “Deploy” button in the Rstudio display pane. If all goes well, the app should open in a web browser, hosted on shinyapp.io.</li>
+</ol>
+</div>
+</div>
+<div id="conclusion" class="section level2">
+<h2>Conclusion</h2>
+<p>Thats’ it. We hope you have learned something useful for you work. Thank you for attending the workshop!</p>
 </div>
 
 

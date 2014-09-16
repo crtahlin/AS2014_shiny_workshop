@@ -95,5 +95,10 @@
 1. Remove the code refering to our embededd application (since it contains relative references, our next step otherwise won't work.).
 2. Try to deploy your app to shinyapp.io, using the "Deploy" button in the Rstudio display pane. If all goes well, the app should open in a web browser, hosted on shinyapp.io.
 
+## Exercise 4
+
+### Exercise 4.1
+1. Try to run an app remotely from GitHub. Issue: `runGitHub(repo="AS2014_shiny_workshop", username="crtahlin", subdir="exercises/exercise1.9")`
+
 ## Conclusion
 Thats' it. We hope you have learned something useful for you work. Thank you for attending the workshop!

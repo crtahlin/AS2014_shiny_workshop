@@ -53,13 +53,51 @@ if (window.hljs && document.readyState && document.readyState === "complete") {
 
 
 
+<div id="before-we-start" class="section level2">
+<h2>Before we start</h2>
+<pre><code>## Loading required package: shiny</code></pre>
+<pre><code>## Warning: package 'shiny' was built under R version 3.0.3</code></pre>
+<p><div style="width: 100% ; height: 500px ; text-align: center; box-sizing: border-box; -moz-box-sizing: border-box; -webkit-box-sizing: border-box;" class="muted well">Shiny applications not supported in static R Markdown documents</div></p>
+<p>Make sure that you are all set to start working on the exercises!</p>
+<p>Programs and packages that should be already installed on your computer</p>
+<ul>
+<li>R statistical environment. (<a href="http://cran.r-project.org/">CRAN</a>).</li>
+<li>RStudio integrated development environment. (<a href="http://www.rstudio.com/products/rstudio/download/">RStudio web page</a>).</li>
+<li>The <code>shiny</code> R package. (Installed via R console by issuing command <code>install.packages(&quot;shiny&quot;)</code>).</li>
+<li>The <code>devtools</code> R package. (Installed via R console by issuing command <code>install.packages(&quot;devtools&quot;)</code>).</li>
+<li>The <code>shinyapps</code> R package (this package is optional - it is used for deploying apps to <a href="https://www.shinyapps.io/">shinyapps</a>). Install via R console by issuing command: <code>devtools::install_github(&quot;rstudio/shinyapps&quot;)</code></li>
+</ul>
+<p>Make sure that you downloaded and unzipped the course material availabe on <a href="https://github.com/crtahlin/AS2014_shiny_workshop.git">GitHub</a> (at <a href="https://github.com/crtahlin/AS2014_shiny_workshop.git">https://github.com/crtahlin/AS2014_shiny_workshop.git</a>, use the Download ZIP button on the right bottom of the page and unzip the file on your computer)</p>
+<p>To get started:</p>
+<ol style="list-style-type: decimal">
+<li><p>Start R or(preferrably) RStudio</p></li>
+<li><p>Load the shiny package: type <code>library(shiny)</code> in the R console.</p></li>
+<li><p>To make things easier, select the subdirectory <strong>containing the exercises of the course material</strong> as your working directory in R.</p></li>
+</ol>
+<p>For example you can (appropriately modify and ) use the commands:</p>
+<p><code>my.wd=&quot;C:/Users/lara/Dropbox/AS2014_shiny_workshop/exercises&quot;</code> (modify the path to match the location on your laptop)</p>
+<p><code>setwd(my.wd)</code></p>
+<p>or change your working directory using the RStudio menu bar (click on Session &gt; Set Working Directory &gt; Choose Directory… ).</p>
+</div>
 <div id="exercise-1" class="section level2">
 <h2>Exercise 1</h2>
+<p>The aim of Exercise 1 is to develop (and eventually deploy) an application that draws the <strong>density function of a Gaussian distribution</strong> (with arbitrary mean and standard deviation), which is customizable to some extent (the labels appearing on the axes and the color of the curve can be changed).</p>
+<p>The app that you will develop (step by step) can be seen typing the following commands in R console.</p>
+<p><code>runGitHub(repo=&quot;AS2014_shiny_workshop&quot;, username=&quot;crtahlin&quot;, subdir=&quot;exercises/exercise1.9&quot;)</code></p>
+<div id="exercise-1.0" class="section level3">
+<h3>Exercise 1.0</h3>
+<ol style="list-style-type: decimal">
+<li>open the ui.R and server.R scripts contained in the exercise1.0 subdirectory. The content of the files is the <em>minimal</em> content needed for a working app.</li>
+<li>run the application. If you set the working directory correctly and loaded the shiny package, the command <code>runApp(&quot;exercise1.0&quot;)</code> should display the app in your browser.</li>
+</ol>
+</div>
 <div id="exercise-1.1" class="section level3">
 <h3>Exercise 1.1</h3>
-<ol style="list-style-type: decimal">
+<ol start="0" style="list-style-type: decimal">
+<li>open the ui.R and server.R functions</li>
 <li>Ui.R : Define a plotOutput() of the “plotDensity”.</li>
 <li>Server.R : Generate plot of standard normal distribution probability density and put it into output slot “plotDensity”.</li>
+<li>Run the app using the <code>runApp()</code> function. Note: Explain how to use browser() for debuging.</li>
 </ol>
 </div>
 <div id="exercise-1.2" class="section level3">
@@ -195,6 +233,7 @@ if (window.hljs && document.readyState && document.readyState === "complete") {
 <h3>Exercise 4.1</h3>
 <ol style="list-style-type: decimal">
 <li>Try to run an app remotely from GitHub. Issue: <code>runGitHub(repo=&quot;AS2014_shiny_workshop&quot;, username=&quot;crtahlin&quot;, subdir=&quot;exercises/exercise1.9&quot;)</code></li>
+<li>Try to run the directly from an URL. The app has to be in some sort of compressed format (we will use GitHub to store a ZIP file, note the path is somewhat strange in this case). Issue: <code>runUrl(&quot;https://github.com/crtahlin/AS2014_shiny_workshop/blob/master/exercises/exercise4.1/example.zip?raw=true&quot;, filetype=&quot;.zip&quot;)</code> Note: Discuss other options for app execution (local, server, shinyapp, running from a remote URL).</li>
 </ol>
 </div>
 </div>

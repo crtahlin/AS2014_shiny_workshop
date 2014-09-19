@@ -23,7 +23,8 @@ shinyUI(
         downloadButton(outputId = "downloadData", label = "Download data")
         ),
          tabPanel(title = "Outputs",
-                  plotOutput("barPlot")
+                  plotOutput("barPlot"),
+                  downloadButton(outputId = "downloadPlot", label = "Download plot")
            
            )
         )

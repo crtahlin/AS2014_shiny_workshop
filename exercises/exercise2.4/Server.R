@@ -28,10 +28,21 @@ shinyServer(function(input, output) {
   })
   
   output$downloadData <- downloadHandler(
-    filename="data.csv",
+    filename="dataTabDel.txt",
     content= function (file) {
-      write.csv2(data(), file=file)
+      write.table(data(), file=file, sep="\t")
     }
     )
+  
+  
+  output$downloadPlot <- downloadHandler(
+    filename="plot.png",
+    content= function (file) {
+      png(filename=file)
+      barplot(height=data()[,input$selectedVariable], names.arg=data()$Company)
+      dev.off()
+      
+    }
+  )
   
 })

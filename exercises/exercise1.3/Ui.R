@@ -11,8 +11,8 @@ shinyUI(
     # define content of left side of the page ####
     sidebarPanel(
       numericInput(inputId = "meanValue", label = "Mean", value = 0, min = -2, max = 2, step = 0.1),
-      sliderInput(inputId = "sdValue", label = "Standard deviation", min = 0, max = 2, value = 1, step = 0.1)
-      ),
+	  sliderInput(inputId = "sdValue", label = "Standard deviation", min = 0, max = 2, value = 1, step = 0.1, animate=FALSE)
+       ),
     
     # define content of the main part of the page ####   
     mainPanel(

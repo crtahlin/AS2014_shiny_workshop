@@ -21,13 +21,19 @@ inputPanel(
               min = 0.2, max = 2, value = 1, step = 0.2)
 )
 
-renderPlot({
+
+
+  renderPlot({
   hist(faithful$eruptions, probability = TRUE, breaks = as.numeric(input$n_breaks),
        xlab = "Duration (minutes)", main = "Geyser eruption duration")
   
   dens <- density(faithful$eruptions, adjust = input$bw_adjust)
   lines(dens, col = "blue")
 })
+
+
+
+
 ```
 
 ## Scatterplot of the eruptions data
@@ -58,7 +64,7 @@ shinyAppDir(
 
 Note the use of the `height` parameter to determine how much vertical space the embedded application should occupy.
 
-You can also use the `shinyApp` function to define an application inline rather then in an external directory.
+You can also use the `shinyApp()` function to define an application inline rather then in an external directory.
 
 In all of R code chunks above the `echo = FALSE` attribute is used. This is to prevent the R code within the chunk from rendering in the document alongside the Shiny components.
 

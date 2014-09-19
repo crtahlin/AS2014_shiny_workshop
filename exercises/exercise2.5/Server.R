@@ -35,4 +35,14 @@ shinyServer(function(input, output) {
     }
     )
   
+  output$downloadPlot <- downloadHandler(
+    filename="plot.png",
+    content= function (file) {
+      png(filename=file)
+      barplot(height=data()[,input$selectedVariable], names.arg=data()$Company)
+      dev.off()
+      
+    }
+  )
+  
 })

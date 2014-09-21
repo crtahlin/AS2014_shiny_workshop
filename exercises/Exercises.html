@@ -55,9 +55,6 @@ if (window.hljs && document.readyState && document.readyState === "complete") {
 
 <div id="before-we-start" class="section level2">
 <h2>Before we start</h2>
-<pre><code>## Loading required package: shiny</code></pre>
-<pre><code>## Warning: package 'shiny' was built under R version 3.0.3</code></pre>
-<p><div style="width: 100% ; height: 500px ; text-align: center; box-sizing: border-box; -moz-box-sizing: border-box; -webkit-box-sizing: border-box;" class="muted well">Shiny applications not supported in static R Markdown documents</div></p>
 <p>Make sure that you are all set to start working on the exercises!</p>
 <p>Programs and packages that should be already installed on your computer</p>
 <ul>
@@ -65,172 +62,237 @@ if (window.hljs && document.readyState && document.readyState === "complete") {
 <li>RStudio integrated development environment. (<a href="http://www.rstudio.com/products/rstudio/download/">RStudio web page</a>).</li>
 <li>The <code>shiny</code> R package. (Installed via R console by issuing command <code>install.packages(&quot;shiny&quot;)</code>).</li>
 <li>The <code>devtools</code> R package. (Installed via R console by issuing command <code>install.packages(&quot;devtools&quot;)</code>).</li>
-<li>The <code>shinyapps</code> R package (this package is optional - it is used for deploying apps to <a href="https://www.shinyapps.io/">shinyapps</a>). Install via R console by issuing command: <code>devtools::install_github(&quot;rstudio/shinyapps&quot;)</code></li>
+<li>The <code>shinyapps</code> R package (this package is optional - it is used for deploying apps to <a href="https://www.shinyapps.io/">shinyapps</a>). Install via R console by issuing command: <code>devtools::install_github(&quot;rstudio/shinyapps&quot;)</code>. Connect your account to RStudio using the Tools-&gt;ShinyApp …. More information about the setup of the shinyapp accounts are available on this [web page] (<a href="https://github.com/rstudio/shinyapps/blob/master/guide/guide.md">https://github.com/rstudio/shinyapps/blob/master/guide/guide.md</a>).</li>
 </ul>
-<p>Make sure that you downloaded and unzipped the course material availabe on <a href="https://github.com/crtahlin/AS2014_shiny_workshop.git">GitHub</a> (at <a href="https://github.com/crtahlin/AS2014_shiny_workshop.git">https://github.com/crtahlin/AS2014_shiny_workshop.git</a>, use the Download ZIP button on the right bottom of the page and unzip the file on your computer)</p>
+<p>Make sure that you downloaded and unzipped the course material availabe on <a href="https://github.com/crtahlin/AS2014_shiny_workshop.git">GitHub</a> (at <a href="https://github.com/crtahlin/AS2014_shiny_workshop.git">https://github.com/crtahlin/AS2014_shiny_workshop.git</a>, use the Download ZIP button on the bottom right of the page and unzip the file on your computer).</p>
 <p>To get started:</p>
 <ol style="list-style-type: decimal">
-<li><p>Start R or(preferrably) RStudio</p></li>
+<li><p>Start R or (preferrably) RStudio</p></li>
 <li><p>Load the shiny package: type <code>library(shiny)</code> in the R console.</p></li>
 <li><p>To make things easier, select the subdirectory <strong>containing the exercises of the course material</strong> as your working directory in R.</p></li>
 </ol>
-<p>For example you can (appropriately modify and ) use the commands:</p>
-<p><code>my.wd=&quot;C:/Users/lara/Dropbox/AS2014_shiny_workshop/exercises&quot;</code> (modify the path to match the location on your laptop)</p>
-<p><code>setwd(my.wd)</code></p>
+<p>For example, you can (appropriately modify and ) use the commands:</p>
+<pre><code># modify the path to match the location on your laptop
+my.wd=&quot;C:/Users/lara/Dropbox/AS2014_shiny_workshop/exercises&quot; 
+#set the working directory
+setwd(my.wd)</code></pre>
 <p>or change your working directory using the RStudio menu bar (click on Session &gt; Set Working Directory &gt; Choose Directory… ).</p>
+</div>
+<div id="section" class="section level2">
+<h2>——————————————————————–</h2>
 </div>
 <div id="exercise-1" class="section level2">
 <h2>Exercise 1</h2>
-<p>The aim of Exercise 1 is to develop (and eventually deploy) an application that draws the <strong>density function of a Gaussian distribution</strong> (with arbitrary mean and standard deviation), which is customizable to some extent (the labels appearing on the axes and the color of the curve can be changed).</p>
-<p>The app that you will develop (step by step) can be seen typing the following commands in R console.</p>
-<p><code>runGitHub(repo=&quot;AS2014_shiny_workshop&quot;, username=&quot;crtahlin&quot;, subdir=&quot;exercises/exercise1.9&quot;)</code></p>
-<div id="exercise-1.0" class="section level3">
-<h3>Exercise 1.0</h3>
+<p>The aim of Exercise 1 is to develop (and eventually deploy) an application that draws the <strong>density function of a Gaussian distribution</strong> (with arbitrary mean and standard deviation), which is customizable to some extent (the labels appearing on the axes and the color of the curve can be changed). The exercise will guide you step by step, you will start with an <em>empty</em> application and finish (hopefully) with an application that will look like <a href="http://lara.shinyapps.io/NormalDistribution">this one</a>. If you get lost in one of the assignments you can always open the files of the following assignment, which contain the solutions of the previous steps.</p>
+<p>You can also see the app that you will develop (step by step) typing the following commands in R console:<br /><code>runGitHub(repo=&quot;AS2014_shiny_workshop&quot;, username=&quot;crtahlin&quot;, subdir=&quot;exercises/exercise1.9&quot;)</code></p>
+<div id="exercise-1.1-draw-the-n01-density-function" class="section level4">
+<h4>Exercise 1.1: draw the N(0,1) density function</h4>
 <ol style="list-style-type: decimal">
-<li>open the ui.R and server.R scripts contained in the exercise1.0 subdirectory. The content of the files is the <em>minimal</em> content needed for a working app.</li>
-<li>run the application. If you set the working directory correctly and loaded the shiny package, the command <code>runApp(&quot;exercise1.0&quot;)</code> should display the app in your browser.</li>
+<li>Open the ui.R and server.R scripts contained in the <strong>exercise1.0 subdirectory</strong>. The content of the files is the <em>minimal</em> content needed for a working app.</li>
+<li>Run the application. If you set the working directory correctly and loaded the shiny package, the command <code>runApp(&quot;exercise1.0&quot;)</code> should display the app in your browser. Use the command <code>runApp(&quot;exercise1.0&quot;, display=&quot;showcase&quot;)</code> to display the code within the browser.</li>
+<li>In which file do you think that you will include the code that plots the density function?</li>
+</ol>
+<pre><code>## Loading required package: shiny</code></pre>
+<p><div style="width: 100% ; height: 50px ; text-align: center; box-sizing: border-box; -moz-box-sizing: border-box; -webkit-box-sizing: border-box;" class="muted well">Shiny applications not supported in static R Markdown documents</div> 4. In which file will you include the code used to display the density function?</p>
+<p><div style="width: 100% ; height: 50px ; text-align: center; box-sizing: border-box; -moz-box-sizing: border-box; -webkit-box-sizing: border-box;" class="muted well">Shiny applications not supported in static R Markdown documents</div></p>
+<ol start="5" style="list-style-type: decimal">
+<li><p>Add the code that will produce the plot of the standard Gaussian density function (N(0,1)) for values in the interval (-4&lt;x&lt;4), and display it in the main panel of the app. Save the changes in the code and check if everything works by running your app. (Hint: in R you could use the <code>curve(dnorm, from=-4, to=4)</code> function included in the graphics package; in shiny remember to use the <code>renderPlot()</code> and <code>plotOutput()</code> functions. Save your graph in the an output slot called “plotDensity”)</p></li>
+<li><p>The working code is included in the Exercise1.1 app.</p></li>
+</ol>
+<p><em>To continue with the exercises: you can go on and continue editing this app and include the changes in the ui.R and server.R files contained in the Exercise1.0 directory, or you can use the files with the updated solutions that we included in Exercise1.1, Exercise1.2, etc. directories.</em></p>
+</div>
+<div id="exercise-1.2-allow-the-user-to-specify-the-mean-value" class="section level4">
+<h4>Exercise 1.2: allow the user to specify the mean value</h4>
+<ol style="list-style-type: decimal">
+<li><p>Add a widget for selecting the mean value of the Gaussian density and assign it to an input slot called “meanValue”. Allow for values included in the (-2, 2) interval, set the default value to 0.</p></li>
+<li><p>Plot the density function N(meanValue, 1).</p></li>
+</ol>
+<p>Hints: use the <code>numericInput()</code> widget, remember to use <code>input$meanValue</code> instead of <code>meanValue</code> in the server.r file. If you want to debug your app you can add a <code>browser()</code> expression within the server.R file. Similarly as in R, the execution of the app will stop at the line of code where the browser is called and you will be able to check the values of the objects appearing within your functions typing commands in the R console.</p>
+</div>
+<div id="exercise-1.3-allow-the-user-to-specify-the-standard-deviation" class="section level4">
+<h4>Exercise 1.3: allow the user to specify the standard deviation</h4>
+<ol style="list-style-type: decimal">
+<li><p>Add a widget for selecting the standard deviation of the Gaussian density and assign it to an input slot called “sdValue”. Allow for values included in the (0, 2) interval, set the default value to 1.</p></li>
+<li><p>Plot the density function N(meanValue, sdValue).</p></li>
+</ol>
+<p>Hints: use the <code>sliderInput()</code> widget, remember to use <code>input$sdValue</code> instead of <code>sdValue</code> in the server.r file.</p>
+<ol start="3" style="list-style-type: decimal">
+<li>Explore the effect of specifiying <code>animate=TRUE</code> in the <code>sliderInput()</code> widget.<br />Don’t forget that the widgets appearing in the sidebar panel must be separated with commas in the <code>sidebarPanel()</code> function.</li>
 </ol>
 </div>
-<div id="exercise-1.1" class="section level3">
-<h3>Exercise 1.1</h3>
-<ol start="0" style="list-style-type: decimal">
-<li>open the ui.R and server.R functions</li>
-<li>Ui.R : Define a plotOutput() of the “plotDensity”.</li>
-<li>Server.R : Generate plot of standard normal distribution probability density and put it into output slot “plotDensity”.</li>
-<li>Run the app using the <code>runApp()</code> function. Note: Explain how to use browser() for debuging.</li>
+<div id="exercise-1.4-add-a-vertical-line-at-the-mean-value-if-selected-by-the-user" class="section level4">
+<h4>Exercise 1.4: add a vertical line at the mean value (if selected by the user)</h4>
+<ol style="list-style-type: decimal">
+<li>Add a checkbox widget for selecting whether to plot a vertical line at the mean (set the defalut value to FALSE). Assign the choice to an input slot called “plotMean”.</li>
+<li>Add a vertical line at the mean, if “plotMean==TRUE”.</li>
+</ol>
+<p>Hint: use the <code>checkboxInput()</code> widget. Vertical lines in R can be drawn using the <code>abline()</code> function. Make sure there is an “expression” inside <code>renderPlot()</code>.</p>
+</div>
+<div id="exercise-1.5-add-the-possibility-of-choosing-the-color-of-the-curve" class="section level4">
+<h4>Exercise 1.5: add the possibility of choosing the color of the curve</h4>
+<ol style="list-style-type: decimal">
+<li>Add a menu to select the color of the curve and assign the selection to an input slot called “curveColor”. Let the admissible values be: black (default), red and blue.</li>
+<li>Draw the curve using the selected color.</li>
+</ol>
+<p>Hint: use the <code>selectInput()</code> widget. The color of the curve can be changed using the <code>col</code> option in the <code>curve()</code> function.</p>
+<ol start="3" style="list-style-type: decimal">
+<li>To visually separate the inputs, add horizontal lines between widgets on the sidebar menu using the <code>hr()</code> command. <code>hr()</code> is an HTML builder function included in shiny; see the other builders by typing <code>? builder</code> in R.</li>
 </ol>
 </div>
-<div id="exercise-1.2" class="section level3">
-<h3>Exercise 1.2</h3>
+<div id="exercise-1.6-enable-the-user-to-specify-the-title-of-the-plot-and-the-label-of-the-y-axis." class="section level4">
+<h4>Exercise 1.6: enable the user to specify the title of the plot and the label of the y-axis.</h4>
 <ol style="list-style-type: decimal">
-<li>Ui.R : Add widget for selecting mean of the normal distribution with numericInput() and assigning it slot “meanValue”. Check which arguments numericInput() takes.</li>
-<li>Server.R : Add “input$meanValue” as parameter for plotting.</li>
+<li><p>Enable the user to specify the title of the plot and the label for the y-axis; assign the choices to the input slots “plotTitle” and “verticalLabel”. Set the default values to “A plot” and “probability density”, respectively.</p></li>
+<li><p>Use the specified strings to label the y-axis and to define the title of the plot.</p></li>
 </ol>
+<p>Hint: use the <code>textInput()</code> widget. In R the title of the plot and the labels of the y-axis can be specified using the <code>main</code> and <code>ylab</code> options within the <code>curve()</code> function.</p>
 </div>
-<div id="exercise-1.3" class="section level3">
-<h3>Exercise 1.3</h3>
+<div id="exercise-1.7-display-a-table-that-reports-a-subset-of-the-x-and-y-values-displayed-in-the-graph." class="section level4">
+<h4>Exercise 1.7: display a table that reports (a subset of) the x and y values displayed in the graph.</h4>
 <ol style="list-style-type: decimal">
-<li>Ui.R : Add a widget for selecting standard deviation of the normal distribution with sliderInput() and assign it to slot “sdValue”. Check which arguments sliderInput() takes.</li>
-<li>Server.R : Add “input$sdValue” as parameter for plotting.</li>
+<li><p>Prepare a table with two columns that includes a subset of the x and y values displayed in the graph. Let x vary between -4 and 4, and the increment of the sequence be 0.1. Assign the table to an output slot called “tableDensity”. Name the columns: “Value” and “Probability density”.</p></li>
+<li><p>Display the table in the main panel, below the graph.</p></li>
 </ol>
+<p>Hints: in R a sequence of values can be easily generated using the <code>seq()</code> function. Use the <code>renderTable()</code> and <code>tableOutput()</code> functions to deal with the table in shiny. Don’t forget that the output elements appearing in the main panel must be separated with commas in the <code>mainPanel()</code> function.</p>
 </div>
-<div id="exercise-1.4" class="section level3">
-<h3>Exercise 1.4</h3>
+<div id="exercise-1.8-move-the-table-in-a-separate-tab." class="section level4">
+<h4>Exercise 1.8: move the table in a separate tab.</h4>
 <ol style="list-style-type: decimal">
-<li>Ui.R : Add a checkbox widget for selecting whether to plot a line at the mean. Assign result to slot “plotMean”. Check which arguments “checkboxInput()” takes.</li>
-<li>Server.R : Add a vertical line at the mean, if “plotMean==TRUE”. (Hint: Use abline(), make sure there is an “expression” inside renderPlot())</li>
+<li>Create a tabset panel with two tab elements - put the graph on the first and the table on the second tab.</li>
+<li>Make the column with probability density values display 4 decimal places instead of 2. (Hint: pass the “digits” argument to xtable.)</li>
 </ol>
+<p>Hints: In shiny <code>tabsetPanel()</code> creates a tabset that contains <code>tabPanel()</code> elements. In this exercise the tabset will be included in the main panel.</p>
 </div>
-<div id="exercise-1.5" class="section level3">
-<h3>Exercise 1.5</h3>
+<div id="exercise-1.9-deploy-your-app-on-the-web" class="section level4">
+<h4>Exercise 1.9: deploy your app on the web</h4>
 <ol style="list-style-type: decimal">
-<li>Ui.R : Add a menu to select which color to use for the curve via selectInput() and assign the selection to “curveColor”. check which arguments selectInput() takes.</li>
-<li>Server.R : Use selected color for the density curve.</li>
-<li>Ui.R : Add horizontal lines between items on the menu via hr(), to visualy separate the items.</li>
-</ol>
-</div>
-<div id="exercise-1.6" class="section level3">
-<h3>Exercise 1.6</h3>
-<ol style="list-style-type: decimal">
-<li>Ui.R : Enable user to set title for the plot and label for the plot vertical axis. Use textInput() for this and assign values to slots “plotTitle” and “verticalLabel”.</li>
-<li>Server.R : Use the values to label the vertical axis and the plot title.</li>
-</ol>
-</div>
-<div id="exercise-1.7" class="section level3">
-<h3>Exercise 1.7</h3>
-<ol style="list-style-type: decimal">
-<li>Server.R : Prepare a table with two columns: the variable values from -4 to 4; the probability densities for these values. Use renderTable() for this and assign the output to “tableDensity” slot.</li>
-<li>Ui.R : Use tableOutput() to output the generated table.</li>
-</ol>
-</div>
-<div id="exercise-1.8" class="section level3">
-<h3>Exercise 1.8</h3>
-<ol style="list-style-type: decimal">
-<li>Ui.R: Create two tabs - put the graph on the first one and the table on the second one. Use tabsetPanel() and tabPanel().</li>
-<li>Server.R : Make the column with probability density values display 4 decimal places instead of 2. (Hint: pass the “digits” argument to xtable.)</li>
-</ol>
-</div>
-<div id="exercise-1.9" class="section level3">
-<h3>Exercise 1.9</h3>
-<ol style="list-style-type: decimal">
-<li>Issue command <code>library(shinyapps)</code> in the R console.</li>
+<li>Type the command <code>library(shinyapps)</code> in the R console.</li>
 <li>Login into <a href="https://www.shinyapps.io/login">shinyapps</a>. Find the “tokens” section and click “Show” next to your token. Use the “Copy to Clipboard” button. Paste to R console.</li>
-<li>Issue command <code>deployApp(appDir=&quot;FOLDERWITHSHINYCODE&quot;, appName=&quot;NormalDistribution&quot;)</code>. The code and required packages will get installed to the remote server. A web page will open with the app running remotely.</li>
+<li>Issue command <code>deployApp(appDir=&quot;exercise1.8&quot;, appName=&quot;NormalDistribution&quot;)</code>. The code and required packages will get installed to the remote server. A web page will open with the app running remotely.</li>
 </ol>
+<p>Hopefully, it should work. The app is available online on one of our accounts at this <a href="https://lara.shinyapps.io/NormalDistribution/">address</a>.</p>
+<p>If you have not signed up for a shinyapps account you can exchange your app with collegues that have R installed on their computer sending them the ui.R and server.R files.</p>
 </div>
+<div id="exercise-1.9-optional-update-the-displayed-results-only-when-an-action-button-is-pressed" class="section level4">
+<h4>Exercise 1.9 (optional): update the displayed results only when an action button is pressed</h4>
+<ol style="list-style-type: decimal">
+<li>Include an action button in your app that assures that the results will be updated only when this button will be pressed. (This can be a very useful feature when the values of many parameters can be chosen, as it executes the code only when the user decides to - and not each time a the value of a parameter is changed).</li>
+</ol>
+<p>Hints: the action button can be included using the widget <code>actionButton()</code>. If you include a reference to input slot linked to the actionButton in your rendering expressions, these will be re-evaluated each time the value of the input slot changes (each time the user presses the button in the app). This can be obtained by simply writing the name of the input slot within the rendering expression. Use the function <code>isolate({})</code> in order to avoid that the rendering expression is re-executed when the other input slots change. All the commands embedded in {} will be executed only when the input slots included in the reactive expression, and not embedded in the non-reactive scope created by isolate, will change.</p>
+<p>The same result can be more easily achieved using the <code>submitButton()</code> widget.</p>
+<ol start="2" style="list-style-type: decimal">
+<li>Add a logo to your app.</li>
+</ol>
+<p>Hint: the images must be saved in a subdirectory called (mandatorily) www. They can be included in the user interface using the <code>img()</code> HTML builder function (for example, with the code: <code>img(src=&quot;nameOfTheFile&quot;, height = ..., width = ...)</code>).</p>
+<p>The solutions can be seen using the <code>runApp(appDir=&quot;exercise1.9optional&quot;, display=&quot;showcase&quot;)</code> command - or looking into the ui.R and server.R files.</p>
+</div>
+</div>
+<div id="section-1" class="section level2">
+<h2>——————————————————————–</h2>
 </div>
 <div id="exercise-2" class="section level2">
 <h2>Exercise 2</h2>
-<div id="exercise-2.1" class="section level3">
-<h3>Exercise 2.1</h3>
+<p>The aim of exercise 2 is to create an app that upoads a data file, displays the uploaded data as a sortable table, displays data and allows you to download a subset of the data; moreover, you will define an input widget that depends on the other inputs. The result can be seen using the <code>runApp(appDir=&quot;exercise2.5&quot;)</code> command or see it online at this <a href="https://lara.shinyapps.io/Exercise2/">address</a>.</p>
+<p>The data that you can upload as test data are in csv format (comma separated values) and stored in the <strong>exercise2.0</strong> subdirectory (CompanyValuations.csv file).</p>
+<p>Modify the server.R and ui.R files stored in the <strong>exercise2.0</strong> subdirectory to solve the exercises.</p>
+<div id="exercise-2.1-create-an-app-that-uploads-the-data-from-a-csv-file-and-displays-a-table-containing-the-data." class="section level4">
+<h4>Exercise 2.1: create an app that uploads the data from a csv file and displays a table containing the data.</h4>
 <ol style="list-style-type: decimal">
-<li>Ui.R : Create a file upload button using fileInput(). Assign upload to slot “uploadedFile”. See details of the fileInput() function in its help, to see where the file is uploaded.</li>
-<li>Server.R : Process the uploaded file - import data from it using read.csv2() using a reactive() function and assigning the function the name “data”.</li>
-<li>Ui.R : Create a dataTableOutput() output, that will output a table on the screen using the data in the slot “data”.</li>
-<li>Server.R : Put data in the correct form into slot “data” using renderDataTable(). Test.</li>
+<li>Include a file upload widget in the user interface and assign the input to an input slot called “uploadedFile”.</li>
+<li>Effectively import the data in R and store its content in a reactive object called “data”.</li>
+</ol>
+<p>Hints: use the <code>fileInput()</code> widget to upload the file; see details of the fileInput() function in its help to figure out where/how the file is uploaded. In R you can use the <code>read.csv2()</code> function to read a csv file. Don’t forget that the uploaded data must be <strong>reactive</strong>.</p>
+<ol start="3" style="list-style-type: decimal">
+<li>Prepare a table containing the uploaded data and display it on the user interface.</li>
+</ol>
+<p>Hints: use the <code>dataTableOutput()</code> function to display an output slot table created with the <code>renderDataTable()</code> function.</p>
+</div>
+<div id="exercise-2.2-create-a-graphical-representation-of-a-specific-variable" class="section level4">
+<h4>Exercise 2.2: create a graphical representation of a specific variable</h4>
+<ol style="list-style-type: decimal">
+<li>Organize the outputs in the main panel using tabsets. In the second tab display a graphical representation of the “ValuationInEuros variable”. Here you can assume that the name of the variable is fixed: all the users will use exactly the same name in their data.</li>
+</ol>
+<p>Hints: remember that data are reactive. Functions that you might be using: <code>renderPlot()</code>, <code>plotOutput()</code>. The variable in the data reactive expression will be assessed using the <code>data()$ValuationInEuros</code> expression. In R you can plot the variable using <code>barplot()</code>, <code>hist()</code> or <code>boxplot()</code> functions (we used barplot).</p>
+</div>
+<div id="exercise-2.3-create-a-widget-with-which-you-will-select-the-variable-that-will-be-graphically-displayed" class="section level4">
+<h4>Exercise 2.3: create a widget with which you will select the variable that will be graphically displayed</h4>
+<p>Hints: The widgets in the user interface that depend on some of the other inputs (or outputs) can be defined in the server.R function, using the <code>renderUI()</code> function. Within the <code>renderUI()</code> function you can use the widgets that you are already familiar with (like <code>selectInput()</code>, etc.). See the help of the function for details.</p>
+<ol style="list-style-type: decimal">
+<li>Create a reactive function called “variableNames”, which returns the names of the variables of the uploded data.</li>
+<li>(in server.R!) Create a widget and assign it to a slot called “variableSelection” (use renderUI). The widget menu should use <code>selectInput()</code> and offer the names of the variables as options (saved in the “variableNames” component). The selected variable should be saved into a slot called “selectedVariable”.</li>
+<li>Add the created menu to the sidebar using the <code>uiOutput()</code> function.</li>
+<li>Modify the script used to plot the <code>data()$ValuationInEuros</code> variable to display the selected variable (Hint: Use [] for subsetting data().)</li>
 </ol>
 </div>
-<div id="exercise-2.2" class="section level3">
-<h3>Exercise 2.2</h3>
+<div id="exercise-2.4-add-a-submit-button-and-allow-the-user-to-download-the-data-with-tab-delimited-format" class="section level4">
+<h4>Exercise 2.4: add a “submit button” and allow the user to download the data (with tab delimited format)</h4>
 <ol style="list-style-type: decimal">
-<li>Ui.R : Create a place for a plot of the data using plotOutput(“barPlot”).</li>
-<li>Server.R : Create a barplot() of the data and assign it to “barPlot” slot. Be careful to reference the reactive function data() and not an object data.</li>
-<li>Ui.R : Create tabs - one for the table and another for the plot (and other outputs). Put the plot on the other tab.</li>
+<li>add an action button that will make sure that the code of the app is executed only when this button is pressed (reactivity will “wait” until the user clicks the button).</li>
 </ol>
+<p>Hints: use the <code>submitButton()</code> widget, which will handle easily the problem (you could use the <code>isolate()</code> functionalities introduced in Exercise 1.9, but it would be more cumbersome).</p>
+<ol start="2" style="list-style-type: decimal">
+<li>Add a widget that will allow the user to download the data using a tab delimited format.</li>
+</ol>
+<p>Hints: prepare the data using the <code>downloadHandler()</code> function in server.R (see help for details), assign the output component to an object called “downloadData”. Within the function you can use the <code>write.table()</code> function with the option <code>sep=&quot;\t&quot;</code> to prepare the data in tab delimited format ready for downlowad. In ui.R use the <code>downloadButton()</code> widget to allow the user to download the file prepared with the <code>downloadHandler()</code> function.</p>
+<p>Hint: the download handler functionality is one of the features that does not work well in all the browsers. If you don’t get an error in the app but the file does not download you might try using a different browser (for example, in our tests the browser within RStudio did not handle correctly the download, while Chrome and Firefox did).</p>
+<ol start="3" style="list-style-type: decimal">
+<li>Give the user the possibility of downloading also a plot (add the option in the tab where the plot appears).</li>
+</ol>
+<p>Hint: you can use almost the same code used to download the data, only the contents of the <code>downloadHandler()</code> function (content slot) will be changed. In R we can prepare files containing graphs with commands like</p>
+<pre><code>png(filename=file)
+plot(...)
+dev.off()</code></pre>
+<p>Here you can use a similar approach (and use a different graphics device, if you want).</p>
 </div>
-<div id="exercise-2.3" class="section level3">
-<h3>Exercise 2.3</h3>
+<div id="exercise-2.5-get-rid-of-the-annoying-error-messages-that-are-displayed-before-uploading-the-data" class="section level4">
+<h4>Exercise 2.5: get rid of the annoying error messages that are displayed before uploading the data</h4>
+<p>Before data are uploaded error messages are displayed (“Error: ‘file’ must be a character string or connection”); the reason is that the R server tries to load the data.</p>
 <ol style="list-style-type: decimal">
-<li>Server.R : Create a reactive function called “variableNames” which return the names of the variables in the uploded data.</li>
-<li>Server.R : Create a menu to render on the GUI using renderUI() (see help for details of the function) and assign it to slot “variableSelection”. The menu should use selectInput() and offer the names of the variables as options. The selected variable should be saved into slot “selectedVariable”.</li>
-<li>Ui.R : Add the created menu to the sidebar using uiOutput() function.</li>
-<li>Use the selection made as the height of the barplot columns. (Hint: Use [] for subsetting data().)</li>
+<li>Try to get rid of this messages.</li>
 </ol>
+<p>Hint: you can add a control condition in the function that reads the data. The control can be based on <code>is.null(input$uploadedFile)</code>.</p>
+<p>You can now deploy your app online:</p>
+<p><code>deployApp(&quot;exercise2.5&quot;, appName=&quot;Exercise2&quot;)</code> (the command should work if your shinyapps account works).</p>
 </div>
-<div id="exercise-2.4" class="section level3">
-<h3>Exercise 2.4</h3>
-<ol style="list-style-type: decimal">
-<li>Ui.R : Add a submitButton() that will delay execution of changes (reactivity will “wait” for user clicking the button).</li>
-<li>Server.R : Call a downloadHandler() (see help for details) and make it prepare the data for download via the write.csv2() function. Assign results to “downloadData”.</li>
-<li>Ui.R : Use downloadButton() below the table with data to enable the user to download it.</li>
-</ol>
 </div>
-<div id="exercise-2.5" class="section level3">
-<h3>Exercise 2.5</h3>
-<ol style="list-style-type: decimal">
-<li>Server.R : We are getting errors (“Error: ‘file’ must be a character string or connection”) put to screen, since there is no data to be loaded. Add <code>if(is.null(input$uploadedFile)) {return()}</code> to the function reading the data.</li>
-</ol>
-</div>
+<div id="section-2" class="section level2">
+<h2>——————————————————————–</h2>
 </div>
 <div id="exercise-3" class="section level2">
 <h2>Exercise 3</h2>
-<div id="exercise-3.1" class="section level3">
-<h3>Exercise 3.1</h3>
+<p>In this exercise we will explore the possibility of building an interactive document that embeds a shiny application (<em>shiny markdown</em> document). You might have noticed that this document (HTML) incuded some interactive features, which are not available if you open the document outside of the RStudio environment.</p>
+<p>These features are very useful if you want to allow your users to interact with a document that your prepared. This might be useful for teaching or for interactive data analysis.</p>
+<p>Interactive documents are based on R Markdown, a format which can accomodate text, executed R code and also include shiny applications (or part of them). To learn more, see <a href="http://rmarkdown.rstudio.com/authoring_shiny.html">Interactive Documents</a>.</p>
+<div id="exercise-3.1" class="section level4">
+<h4>Exercise 3.1</h4>
 <ol style="list-style-type: decimal">
 <li>Use RStudio to open a new “shiny markdown” document. File -&gt; New file -&gt; Rmarkdown. Select “Shiny” option and give the document a title. A template file will open with some demo code already in it.</li>
 <li>Save the file to your drive with the .Rmd suffix.</li>
 <li>Use the Run document command in Rstudio to execute the interactive document.</li>
 </ol>
 </div>
-<div id="exercise-3.2" class="section level3">
-<h3>Exercise 3.2</h3>
+<div id="exercise-3.2" class="section level4">
+<h4>Exercise 3.2</h4>
 <ol style="list-style-type: decimal">
 <li>Change template file to run one of our apps (e.g., exercise 1.9).</li>
 <li>Add to the template file another section “Scatterplot of the eruptions data”, where you plot() the scatterplot of x=faithful$eruptions, y=faithful$waiting. Add two textInput() boxes, where the user can define/change the plot axis labels.</li>
 </ol>
 </div>
-<div id="exercise-3.3" class="section level3">
-<h3>Exercise 3.3</h3>
+<div id="exercise-3.3" class="section level4">
+<h4>Exercise 3.3</h4>
 <ol style="list-style-type: decimal">
 <li>Remove the code refering to our embededd application (since it contains relative references, our next step otherwise won’t work.).</li>
 <li>Try to deploy your app to shinyapp.io, using the “Deploy” button in the Rstudio display pane. If all goes well, the app should open in a web browser, hosted on shinyapp.io.</li>
 </ol>
 </div>
 </div>
+<div id="section-3" class="section level2">
+<h2>——————————————————————–</h2>
+</div>
 <div id="exercise-4" class="section level2">
 <h2>Exercise 4</h2>
-<div id="exercise-4.1" class="section level3">
-<h3>Exercise 4.1</h3>
+<div id="exercise-4.1" class="section level4">
+<h4>Exercise 4.1</h4>
 <ol style="list-style-type: decimal">
 <li>Try to run an app remotely from GitHub. Issue: <code>runGitHub(repo=&quot;AS2014_shiny_workshop&quot;, username=&quot;crtahlin&quot;, subdir=&quot;exercises/exercise1.9&quot;)</code></li>
 <li>Try to run the directly from an URL. The app has to be in some sort of compressed format (we will use GitHub to store a ZIP file, note the path is somewhat strange in this case). Issue: <code>runUrl(&quot;https://github.com/crtahlin/AS2014_shiny_workshop/blob/master/exercises/exercise4.1/example.zip?raw=true&quot;, filetype=&quot;.zip&quot;)</code> Note: Discuss other options for app execution (local, server, shinyapp, running from a remote URL).</li>
@@ -240,6 +302,13 @@ if (window.hljs && document.readyState && document.readyState === "complete") {
 <div id="conclusion" class="section level2">
 <h2>Conclusion</h2>
 <p>Thats’ it. We hope you have learned something useful for you work. Thank you for attending the workshop!</p>
+</div>
+<div id="useful-links" class="section level2">
+<h2>Useful links</h2>
+<p>The <a href="http://shiny.rstudio.com/">shiny web page</a> provides very good tutorials and learning material. The <a href="http://shiny.rstudio.com/articles/cheatsheet.html">shiny cheatsheet</a> is very useful once you get started.</p>
+<p>A good place to get inspired about the existing widgets is the <a href="http://shiny.rstudio.com/gallery/widget-gallery.html">widget gallery</a> or the tutorial <a href="http://shiny.rstudio.com/tutorial/lesson3/">Lesson #3</a>, both available on the shiny web page.</p>
+<p>If you are interested in changing the layout of the user interface, there are many ways in which you can do it. You can read more about it in the <a href="http://shiny.rstudio.com/articles/layout-guide.html">layout guide</a> published on the shiny web page.</p>
+<p>To learn more about interactive documents and R Markdown, see <a href="http://rmarkdown.rstudio.com/authoring_shiny.html">Interactive Documents</a>.</p>
 </div>
 
 
